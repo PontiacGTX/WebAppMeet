@@ -13,6 +13,8 @@ namespace WebAppMeet.Components.Components
     {
         protected IJSObjectReference _module;
 
+        //public virtual string Val { get; set; }
+
         [Parameter]
         public virtual string Value { get; set; }
         [Parameter]

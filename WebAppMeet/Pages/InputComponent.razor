@@ -1,6 +1,8 @@
 ﻿@inherits InputComponentBase
 
-<input list="browsers" id="@id" name="myBrowser" @onkeyup="OnKeyUp" @bind=@Value  />
+<input list="browsers" id="@id" name="myBrowser" @onkeyup="OnKeyUp" @bind=@Value @bind:event="oninput"  />
+
+@*<input @bind="Val" @bind:event="oninput">*@
 @code {
 
 
@@ -20,6 +22,12 @@
         }
     }
 
+    //public override string Val { get {return this.Val; } 
+    //    set
+    //    {
+    //        this.Val = value;
+    //    } 
+    //}
     [Parameter]
     public override string Value { get; set; }
     [Parameter]
@@ -44,8 +52,10 @@
 
         if(e.Key=="Backspace" && Value is{ Length:1} || e.Key=="Backspace" && Value is{ Length:0} || Value==null  )
         {
+
+            if(e.Key=="Backspace")
             TriggeredDeleteRemaining = true;
-            Value = "";
+
         }
         else
         {
