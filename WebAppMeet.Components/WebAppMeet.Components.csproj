@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="6.0.8" />
+    <PackageReference Include="Microsoft.JSInterop" Version="6.0.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SharedProject\SharedProject.csproj" />
+    <ProjectReference Include="..\WebAppMeet.Data\WebAppMeet.Data.csproj" />
+    <ProjectReference Include="..\WebAppMeet.Services\WebAppMeet.Services.csproj" />
+  </ItemGroup>
+
+</Project>

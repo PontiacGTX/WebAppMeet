@@ -1,0 +1,34 @@
+﻿@page "/ChatList/{UserId}"
+@using Radzen.Blazor
+@using WebAppMeet.Data.Entities
+@inherits MeetingListComponentBase
+@using WebAppMeet.Pages
+<h3>MeetingListComponent</h3>
+
+
+<div class="container-fluid">
+    <div class="flexContainerLeft"> 
+    <a class="btn btn-primary" href="/Create/Meeting/User/@UserId">Create</a>
+    </div>
+</div>
+
+@if(meetings is null)
+{
+    <b>Loading...</b>
+}
+else
+{
+    <RadzenGrid AllowPaging="true" AllowColumnResize="true" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive" PageSize="6" Data="meetings" FilterMode="Radzen.FilterMode.Advanced" TItem="Meeting" ApplyFilterText="Apply">
+        <Columns >
+            <RadzenGridColumn TItem="Meeting" Property="MeetingId"></RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting" Property="Description"></RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting" Property="Date">
+                <Template>
+                    @String.Format("{0:d}");
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting" Property="Host.UserName"></RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting" Property="Started"></RadzenGridColumn>
+        </Columns>
+    </RadzenGrid>
+}

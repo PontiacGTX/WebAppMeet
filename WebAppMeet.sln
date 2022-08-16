@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32630.192
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppMeet", "WebAppMeet\WebAppMeet.csproj", "{59752F4A-B01D-42CA-A523-AEDCB7A2F85C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppMeet.Data", "WebAppMeet.Data\WebAppMeet.Data.csproj", "{D36F289C-CD94-433B-AEA3-DF90A48ADF21}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppMeet.DataAcess", "WebAppMeet.DataAcess\WebAppMeet.DataAcess.csproj", "{A4A80652-3774-4390-97C1-F5DD3822F002}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SharedProject", "SharedProject\SharedProject.csproj", "{AAEDF7EC-0783-4DEC-9C2B-FEAD7DA1D65A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppMeet.Services", "WebAppMeet.Services\WebAppMeet.Services.csproj", "{96AAC313-5CD7-4926-BD0B-9447F8EB67CB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAppMeet.Components", "WebAppMeet.Components\WebAppMeet.Components.csproj", "{0446114E-19AE-4262-92EA-2C61D1E6A8B0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{59752F4A-B01D-42CA-A523-AEDCB7A2F85C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59752F4A-B01D-42CA-A523-AEDCB7A2F85C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59752F4A-B01D-42CA-A523-AEDCB7A2F85C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59752F4A-B01D-42CA-A523-AEDCB7A2F85C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D36F289C-CD94-433B-AEA3-DF90A48ADF21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D36F289C-CD94-433B-AEA3-DF90A48ADF21}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D36F289C-CD94-433B-AEA3-DF90A48ADF21}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D36F289C-CD94-433B-AEA3-DF90A48ADF21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4A80652-3774-4390-97C1-F5DD3822F002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4A80652-3774-4390-97C1-F5DD3822F002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4A80652-3774-4390-97C1-F5DD3822F002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4A80652-3774-4390-97C1-F5DD3822F002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAEDF7EC-0783-4DEC-9C2B-FEAD7DA1D65A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAEDF7EC-0783-4DEC-9C2B-FEAD7DA1D65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAEDF7EC-0783-4DEC-9C2B-FEAD7DA1D65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAEDF7EC-0783-4DEC-9C2B-FEAD7DA1D65A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96AAC313-5CD7-4926-BD0B-9447F8EB67CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96AAC313-5CD7-4926-BD0B-9447F8EB67CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96AAC313-5CD7-4926-BD0B-9447F8EB67CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96AAC313-5CD7-4926-BD0B-9447F8EB67CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0446114E-19AE-4262-92EA-2C61D1E6A8B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0446114E-19AE-4262-92EA-2C61D1E6A8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0446114E-19AE-4262-92EA-2C61D1E6A8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0446114E-19AE-4262-92EA-2C61D1E6A8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CCE1C174-ACDB-48FB-9037-FC0ACBB2DDE2}
+	EndGlobalSection
+EndGlobal

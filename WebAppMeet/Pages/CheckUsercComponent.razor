@@ -1,0 +1,21 @@
+﻿@inherits  CheckUserComponentBase
+
+
+
+<label>Choose a user:
+<InputComponent @ref="inputComponent" OnKeyUpEvent="Search" id="Inputitem"></InputComponent>
+
+<div class="@spinnerClass"><div></div><div></div><div></div><div></div></div>
+</label>
+<datalist id="browsers">
+  @for(int i=0;i<param.Count;i++)
+    {
+       <OptionComponent Selected="@(bool.Parse(param[i]["Selected"].ToString()))" Value="@(param[i]["Value"].ToString())"></OptionComponent>
+      
+        
+    }
+
+
+</datalist>
+<button class="btn btn-primary" @onclick="Add">Add</button>
+<SelectedUserListComponent DeleteuserEvent="DeleteUser" SelectedUsers="InvitedUsers" @ref="selectedUserList" ></SelectedUserListComponent>

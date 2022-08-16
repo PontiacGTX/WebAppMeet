@@ -1,0 +1,71 @@
+﻿@inherits InputComponentBase
+
+<input list="browsers" id="@id" name="myBrowser" @onkeyup="OnKeyUp" @bind=@Value  />
+@code {
+
+
+
+    protected override Task OnInitializedAsync()
+    {
+        this.spinnerClass = "lds-ring-disa"; 
+
+        return base.OnInitializedAsync();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            _module = await JS.InvokeAsync<IJSObjectReference>(
+                  "import", "./js/InterOpLib.js");
+        }
+    }
+
+    [Parameter]
+    public override string Value { get; set; }
+    [Parameter]
+    public override string id { get; set; }
+
+    [Parameter]
+    public  EventCallback<KeyboardEventArgs> OnKeyUpEvent { get; set; }
+
+    [CascadingParameter(Name ="spinnerClass")]
+    public string spinnerClass { get; set; }
+
+    private bool TriggeredDeleteRemaining { get; set; }
+    protected async Task OnKeyUp(KeyboardEventArgs e)
+    {
+        bool isAllowedSearchKey = e.Key != "Control" && e.Key != "Space" && e.Key != "Home" && e.Key != "Shift" &&
+        e.Key != "ArrowUp" && e.Key != "ArrowDown" && e.Key != "ArrowLeft" && e.Key != "ArrowRight" && e.Key != "Delete" &&
+        e.Key != "F1" && e.Key != "F2" && e.Key != "F3" && e.Key != "F4" && e.Key != "F5" && e.Key != "F6" && e.Key != "F7" && e.Key != "F8" &&
+        e.Key != "F9" && e.Key != "F10" && e.Key != "F11" && e.Key != "F12" && e.Key != "PrintScreen" && e.Key != "ScrollLock" && e.Key != "Pause"
+        && e.Key != "CapsLock" && e.Key != "NumLock" && e.Key != "ContextMenu" && e.Key != "OS" && e.Key != "PageUp" && e.Key != "PageDown" && e.Key != "End"
+        && e.Key != "AltGraph" && e.Key != "Escape";
+
+
+        if(e.Key=="Backspace" && Value is{ Length:1} || e.Key=="Backspace" && Value is{ Length:0} || Value==null  )
+        {
+            TriggeredDeleteRemaining = true;
+            Value = "";
+        }
+        else
+        {
+            var temp  =await  _module.InvokeAsync<string>("getElementText", id);
+            if(temp!=Value)
+            {
+                Value = temp;
+            }
+        }
+
+        if(string.IsNullOrWhiteSpace(Value) && isAllowedSearchKey && !TriggeredDeleteRemaining)
+        {
+            Value =await  _module.InvokeAsync<string>("getElementText", id);
+        }
+
+        if (isAllowedSearchKey && !TriggeredDeleteRemaining)
+        {
+            await OnKeyUpEvent.InvokeAsync(e);
+        }
+        TriggeredDeleteRemaining = false;
+    }
+    
+}

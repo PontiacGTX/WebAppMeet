@@ -1,0 +1,11 @@
+﻿@inherits OptionComponentBase
+
+<option value="@Value" selected="@(Selected ? "selected":"")"/>
+
+@code{
+
+    
+    public override string Value { get; set; }
+    
+    public override bool Selected { get; set; }
+}

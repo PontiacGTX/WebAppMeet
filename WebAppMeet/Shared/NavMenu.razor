@@ -1,0 +1,90 @@
+﻿@*<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">WebAppMeet</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>*@
+@inject AuthenticationStateProvider _AuthenticationStateProv
+@inject UserManager<AppUser> _userManager
+@code{
+    string path = null;
+    protected string UserId { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState;
+        authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync();
+        string user = authenticationState?.User?.Identity?.Name;
+        UserId = (await _userManager.Users.FirstOrDefaultAsync(x => x.Email == user))?.Id;
+        path = $"/ChatList/{(UserId??"0")}";
+    }
+}
+ <nav class="nav-prop">
+            
+           <ul id="ulist">
+               <label class="logo"><a  href="/"> Meet </a></label>
+               <li id="ullink"> <a class="active" href="/"> Home </a> </li>
+               <li id="ullink"> <a href="#">About  </a> </li>
+               <li id="ullink">  <a href="@path"> Meetings </a> </li>
+               <li id="ullink"> <a href="#">Contact  </a> </li>
+               <li id="icon"    @onmouseover="MakeMenuVisible"  >
+                   <i class="fas fa-bars"></i>
+                   <ul id="accountMenu" style="@displaymenu" >
+                       <CascadingAuthenticationState>
+                           <AuthorizeView>
+                               <Authorized>
+                                   <li class="listItemLogin"><NavLink href="/Profile">Profile</NavLink></li> 
+                                   <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/logout">Logout</NavLink></li> 
+                               </Authorized>
+                     
+                              <NotAuthorized>
+                               <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/login">Login</NavLink></li>
+                               <li class="listItemLogin"><NavLink href="/Register">Signup</NavLink></li> 
+                               </NotAuthorized>
+                          </AuthorizeView>
+                      </CascadingAuthenticationState>
+                   </ul>
+               </li>
+            </ul>
+</nav>
+@*<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Home
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="counter">
+                <span class="oi oi-plus" aria-hidden="true"></span> Counter
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="fetchdata">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+            </NavLink>
+        </div>
+    </nav>
+</div>*@
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string displaymenu { get; set; } = "display:none;";
+    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+    private bool isMouseOutMenu = true;
+    private void MakeMenuVisible(MouseEventArgs e)
+    {
+        displaymenu = "display:flex;";
+        isMouseOutMenu = false;
+
+    }
+
+    private void MakeMenuNonVisible(MouseEventArgs e)
+    {
+        displaymenu = "display:none;";
+
+    }
+}

@@ -1,0 +1,24 @@
+﻿@inherits SelectUserListComponentBase
+
+<h3>Selected User List</h3>
+
+
+<div class="container-fluid">
+    @if(!SelectedUsers.Any())
+    {
+        <div>No Users invited</div>
+    }
+    else
+    {
+         <div>
+            <ul style="fa-ul">
+            @foreach(var u in SelectedUsers.Keys)
+            {
+                <li><span class="fas fa-trash" style="color:red;cursor:pointer;clear: both;display:inline-block;" @onclick="async ()=>{ await this.DeleteuserEvent.InvokeAsync(u);}"></span>@u</li>
+                
+            }
+            </ul>
+        </div>
+    }
+</div>
+

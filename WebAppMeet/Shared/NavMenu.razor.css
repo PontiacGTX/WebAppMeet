@@ -1,0 +1,265 @@
+/*.navbar-toggler {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+*/
+/*.top-row {
+    height: 3.5rem;
+    background-color: rgba(0,0,0,0.4);
+}*/
+
+/*.navbar-brand {
+    font-size: 1.1rem;
+}
+*/
+
+.oi {
+    width: 2rem;
+    font-size: 1.1rem;
+    vertical-align: text-top;
+    top: -2px;
+}
+
+#accountMenu {
+    background: black;
+    flex-direction: column;
+    position: relative;
+    width: min-content;
+    border-radius: 0 20px 20px 20px;
+}
+
+#ulist {
+    display: flex;
+    width: 100%;
+    margin-left: -50px;
+    /*margin-top: -60px;*/
+}
+    
+
+nav {
+    height: 80px !important;
+    width: 100% !important;
+    background: #34495e !important;
+}
+
+.listItemLogin {
+    position: relative;
+    z-index: 1;
+    font-size: 25px;
+    line-height: 2em;
+}
+
+    #ullink.li > a.active, a:hover {
+        background: #e80000;
+    }
+
+.logo {
+    font-size: 35px;
+    font-family: 'Racing Sans One', cursive;
+    font-weight: bold;
+    color: red;
+    padding: 0 100px;
+    line-height: 80px;
+}
+nav > ul #ulist {
+    padding-left: -20px;
+    margin-right: 20px;
+}
+#ulist>li{
+    display:inline-block;
+    line-height:80px;
+    width:100%;
+    
+    
+
+}
+
+nav  a{
+    color:white;
+    font-size:18px;
+    text-transform:capitalize;
+    border:1px transparent red !important;
+    text-decoration:none;
+    padding:7px 10px;
+    border-radius:3px;
+}
+
+a.active  {
+    border: 1px solid;
+}
+
+#icon
+{
+    color:white;
+    font-size:30px;
+    cursor:pointer;
+}
+/*.nav-item {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item ::deep a {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+    }*/
+/*
+.nav-item ::deep a.active {
+    background-color: rgba(255,255,255,0.25);
+    color: white;
+}
+
+.nav-item ::deep a:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white;*/
+}
+
+@media (min-width: 1048px) {
+    .listItemLogin {
+        position: relative;
+        z-index: 1;
+        font-size: 25px;
+        line-height: 2em;
+    }
+    .navbar-toggler {
+        display: none;
+    }
+   /* .logo{
+        font-size:32px;
+        padding-left:60px;
+    }*/
+    nav > #ulist {
+        margin-right: 20px;
+    }
+    nav a{
+        font-size:17px;
+    }
+
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+}
+
+@media (max-width: 900px) {
+    .listItemLogin {
+        position: relative;
+        z-index: 1;
+        font-size: 25px;
+        line-height: 2em;
+    }
+    /*#icon {
+        display: flex;
+        margin-top: -2px;
+        
+        
+        position:relative;
+    }*/
+
+    #ullink {
+        padding-left: -30px;
+    }
+    .nav-prop{
+        
+        
+        
+    }
+    .logo {
+        font-size: 35px;
+        display: flex;
+        position: absolute;
+        font-family: 'Racing Sans One', cursive;
+        font-weight: bold;
+        color: red;
+        padding: 0 100px;
+        line-height: 80px;
+    }
+    #ulist {
+        display: flex;
+        width: 100%;
+        margin-left: 190px;
+        margin: 0px -0px 0px 0px;/*    -80px 60px 8px 0px;*/
+        padding-left: -240px;
+    }
+    
+    
+   #ulist{
+        position:fixed;
+        width:100%;
+        height:70px;
+        
+        background:#2f3640;
+        padding-top:20px;
+        
+    }
+    .collapse {
+        /* Never collapse the sidebar for wide screens */
+        display: block;
+    }
+
+
+}
+
+@media(min-width:350px ) and (max-width: 900px){
+    .listItemLogin {
+        position: relative;
+        z-index: 1;
+        font-size: 25px;
+        line-height: 2em;
+    }
+    #icon {
+        margin-left:20px;
+    }
+    #ullink{
+        margin-left:6px;
+    }
+    .logo {
+        font-size: 35px;
+        position:fixed;
+        top:0;
+        font-family: 'Racing Sans One', cursive;
+        font-weight: bold;
+        color: red;
+        padding: 0 100px;
+        margin-top:-25px;
+        line-height: 80px;
+    }
+}
+
+@media (max-width: 560)
+{
+    .listItemLogin {
+        position: relative;
+        z-index: 1;
+        font-size: 25px;
+        line-height: 2em;
+    }
+    #icon{
+        display:block;
+    }
+
+    #ulist {
+        
+        position: fixed;
+        width: 100%;
+        left:0;
+        top:20px;
+    }
+     
+    nav {
+        height: 20px !important;
+        width: 100% !important;
+        background: #34495e !important;
+    }
+}
