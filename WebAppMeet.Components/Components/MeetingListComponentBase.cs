@@ -33,6 +33,7 @@ namespace WebAppMeet.Components.Components
 
         [Inject]
         IJSRuntime JS { get; set; }
+
         protected IJSObjectReference _module;
         protected IList<Meeting> meetings { get; set; }
         protected Response MeetingsResponse { get; set; }

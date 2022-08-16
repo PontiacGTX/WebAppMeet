@@ -99,7 +99,10 @@ namespace WebAppMeet.Components.Components
                 StateHasChanged();
             }
         }
-
+        public void ComponentStateHasChanged()
+        {
+            StateHasChanged();
+        }
 
         protected override Task OnInitializedAsync()
         {

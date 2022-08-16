@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppMeet.Data.Entities;
+using WebAppMeet.Data;
 using WebAppMeet.Data.Models;
 using WebAppMeet.Services.Services;
 
@@ -24,8 +25,12 @@ namespace WebAppMeet.Components.Components
         [Inject]
         protected MeetingsServices _MeetingServices { get; set; }
         [Inject]
+        protected UserServices _UserServices { get; set; }
+        [Inject]
         IJSRuntime JS { get; set; }
         protected IJSObjectReference _module;
+        [Inject]
+        NavigationManager _NavigationManager { get; set; }
 
         [Parameter]
         public string idUser { get; set; }
@@ -72,7 +77,7 @@ namespace WebAppMeet.Components.Components
         {
             var time = Convert.ToDateTime(e.Value);
 
-            CreateModel.Date= new DateTime( time.Year, time.Month,time.Day,time.Hour,time.Minute, 0, 0, time.Kind);
+            CreateModel.Date= new DateTime( time.Year, time.Month,time.Day,time.Hour,time.Minute, 0, 0, DateTimeKind.Utc);
             var item =CreateModel.Date.ToString();
         }
 
@@ -85,24 +90,59 @@ namespace WebAppMeet.Components.Components
                 return;
             }
 
-            if(!this.CheckUserComponentBase.InvitedUsers.Any())
+            if(!CheckUserComponentBase.InvitedUsers.Any())
             {
                 await PrintMessage("Error while submitting data", "Cannot create a meeting without any invitees");
+                
                 return;
             }
-            var response = await _MeetingServices.Create<CreateMeetingModel>(CreateModel);
-            
+            var thisUserResult = await _UserServices.GetBy(CreateModel.UserId);
+            var thisUser = thisUserResult.Data as AppUser;
+            var invitedUsed = CheckUserComponentBase.InvitedUsers.Keys.FirstOrDefault(x => x.ToUpperInvariant() == thisUser?.Email.ToUpperInvariant());
+            if (invitedUsed!=null)
+            {
+                CheckUserComponentBase.InvitedUsers.Remove(invitedUsed);
+            }
+            if (!CheckUserComponentBase.InvitedUsers.Any())
+            {
+                await PrintMessage("Error while submitting data", "Cannot create a with yourself as an invitee");
+                CheckUserComponentBase.ComponentStateHasChanged();
+                return;
+            }
+            var response = await _MeetingServices.Create(CreateModel);
             Func<Task<Task>> fn =  (response.StatusCode switch
             {
                 200 => async () => {
 
                     var meeting = response.Data as Meeting;
-                    if (meeting == null)
+                    if (meeting != null)
                     {
-                        await _MeetingServices.CreateUserMeeting(new CreateUserMeeetingModel { Date = CreateModel.Date, HostId = CreateModel.UserId, IsHost = true, UserId = CreateModel.UserId, MeetingId = meeting.MeetingId });
+                        await _MeetingServices.CreateUserMeeting(new CreateUserMeeetingModel { HubId ="", Date = CreateModel.Date, HostId = CreateModel.UserId, IsHost = true, UserId = CreateModel.UserId, MeetingId = meeting.MeetingId,  });
+                        List<string> invited = new();
 
+                        try
+                        {
+                            foreach (var user in this.CheckUserComponentBase.InvitedUsers.Keys)
+                            {
+                               var responseUser=await _UserServices.GetUser(user);
+                               AppUser usr = responseUser.Data as AppUser;
+                               await _MeetingServices.CreateUserMeeting(new CreateUserMeeetingModel 
+                               { 
+                                   Date = CreateModel.Date,
+                                   HostId = CreateModel.UserId, 
+                                   IsHost = true, 
+                                   UserId = usr.Id, 
+                                   MeetingId = meeting.MeetingId 
+                               });
+                               invited.Add(usr.Email);
+                            }
+                        }
+                        catch (Exception)
+                        {
 
-                        await PrintMessage("Ok", response.Message);
+                        } 
+                        var users = $"{Environment.NewLine}" + string.Join( Environment.NewLine, invited);
+                        await PrintMessage("Following users were invited:", users);
                     }
                     
                     return Task.CompletedTask;
@@ -112,7 +152,10 @@ namespace WebAppMeet.Components.Components
                 _ => async  () => { return Task.CompletedTask; }
             });
             await fn.Invoke();
-
+            if(response.Success)
+            {
+                _NavigationManager.NavigateTo($"/ChatList/{thisUser.Id}", true);
+            }
         }
     }
 }

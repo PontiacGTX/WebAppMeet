@@ -28,7 +28,7 @@ namespace WebAppMeet.Services.Services
 
             var repo = await GetRepository<Meeting>();
 
-           var result =await repo.AddAndSave(new Meeting { Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId   });
+           var result =await repo.AddAndSave(new Meeting { Url = model.Url, Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId   });
 
             return  Factory.GetResponse<Response>(result);
         }
@@ -53,7 +53,7 @@ namespace WebAppMeet.Services.Services
 
             var userMeetingsRepo = await GetRepository<UserMeetings>();
 
-            var result = await userMeetingsRepo.AddAndSave(new UserMeetings { AllowGuestAccess = true, UserId = model.UserId, IsActive = false, IsHost = model.IsHost, MeetingId = model.MeetingId });
+            var result = await userMeetingsRepo.AddAndSave(new UserMeetings { AllowGuestAccess = true, UserId = model.UserId, IsActive = false, IsHost = model.IsHost, MeetingId = model.MeetingId, HubIdCon = model.HubId });
 
             return Factory.GetResponse<Response>(result);
         }
