@@ -39,9 +39,12 @@ namespace WebAppMeet.Components.Components
         protected IList<Meeting> meetings { get; set; }
         protected Response MeetingsResponse { get; set; }
 
-        protected async Task OnButtonClick(string url)
+        protected async Task OnButtonClick(string url,int meetingId)
         {
-
+            if (!string.IsNullOrEmpty(url))
+                _NavigationManager.NavigateTo(url);
+            else
+                _NavigationManager.NavigateTo($"/Meeting/{meetingId}");
         }
         protected override async Task OnInitializedAsync()
         {

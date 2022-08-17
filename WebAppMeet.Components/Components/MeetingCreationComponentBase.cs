@@ -132,7 +132,7 @@ namespace WebAppMeet.Components.Components
                                    HostId = CreateModel.UserId, 
                                    IsHost = true, 
                                    UserId = usr.Id, 
-                                   MeetingId = meeting.MeetingId 
+                                   MeetingId = meeting.MeetingId,
                                });
                                invited.Add(usr.Email);
                             }

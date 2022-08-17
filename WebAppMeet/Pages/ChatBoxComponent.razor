@@ -1,0 +1,29 @@
+﻿@inherits ChatBoxComponentBase
+
+<div class="container">
+    <section class="col-md-2" >
+        <h4>Chat</h4>
+        <div class="row">
+            @if(MessageList.Any())
+            {
+               <span>No messages</span> 
+            }
+            else
+            {
+                <textarea   disabled></textarea>
+            }
+        </div>
+    </section>
+    <section class="col-md-2" >
+         <div class="row">
+             <textarea @bind=Message @bind:event="oninput"></textarea>
+        </div>
+        <div>
+            <a class="btn btn-success" @onclick="OnButtonSend">Send</a>
+        </div>
+    </section>
+</div>
+
+@code {
+
+}

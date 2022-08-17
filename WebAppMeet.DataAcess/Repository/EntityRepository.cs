@@ -20,7 +20,8 @@ namespace WebAppMeet.DataAcess.Repository
         {
             _ctx = ctx;
         }
-
+        public async Task<long> Count()
+           => _ctx.Set<T>().LongCount();
         public async Task<long> Count<TId>(Expression<Func<T,bool>> selector)
             =>  _ctx.Set<T>().LongCount(selector);
 
@@ -134,7 +135,7 @@ namespace WebAppMeet.DataAcess.Repository
         {
             try
             {
-                var entityStored = this.Get<TId>(id);
+                var entityStored = await  this.Get<TId>(id);
                 _ctx.Entry(entityStored).CurrentValues.SetValues(entity);
                 await _ctx.SaveChangesAsync();
                 return await this.Get<TId>(id);

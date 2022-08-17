@@ -1,0 +1,26 @@
+﻿@page "/Meeting/{MeetingId:int}"
+@inherits MeetingComponentBase
+@inject AuthenticationStateProvider _AuthenticationStateProv
+
+<h3>Meeting Component</h3>
+
+
+
+
+
+<ChatBoxComponent>
+
+</ChatBoxComponent>
+
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
+
+        UserId = (await _userManager.Users.FirstOrDefaultAsync(x => x.Email == _state.User.Identity.Name))?.Id;
+        
+    }
+
+}

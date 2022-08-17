@@ -46,6 +46,7 @@ builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<MeetingsServices>();
 
 builder.Services.AddSignalR();
+builder.Services.AddResponseCompression(options => options.MimeTypes.Concat(new[] { "application/octet-stream" }));
 builder.Services.AddCors(options=>options.AddDefaultPolicy(builder=>builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
 var app = builder.Build();
 

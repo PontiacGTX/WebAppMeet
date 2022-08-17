@@ -27,8 +27,12 @@ namespace WebAppMeet.Services.Services
             var model = Model as CreateMeetingModel;
 
             var repo = await GetRepository<Meeting>();
-
-           var result =await repo.AddAndSave(new Meeting { Url = model.Url, Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId   });
+            
+            var result =await repo.AddAndSave(new Meeting { Url = $"", Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId   });
+            
+            result.Url = $"/Meeting/{result.MeetingId}";
+            
+            result =await repo.UpdateAndSave(result, result.MeetingId);
 
             return  Factory.GetResponse<Response>(result);
         }
