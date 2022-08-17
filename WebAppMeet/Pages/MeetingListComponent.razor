@@ -11,7 +11,7 @@
     <a class="btn btn-primary" href="/Create/Meeting/User/@UserId">Create</a>
     </div>
 </div>
-
+<div style="margin-top:3%;">
 @if(meetings is null)
 {
     <b>Loading...</b>
@@ -20,15 +20,14 @@ else
 {
     <RadzenGrid AllowPaging="true" AllowColumnResize="true" FilterCaseSensitivity="Radzen.FilterCaseSensitivity.CaseInsensitive" PageSize="6" Data="meetings" FilterMode="Radzen.FilterMode.Advanced" TItem="Meeting" ApplyFilterText="Apply">
         <Columns >
-            <RadzenGridColumn TItem="Meeting" Property="MeetingId"></RadzenGridColumn>
-            <RadzenGridColumn TItem="Meeting" Property="Description"></RadzenGridColumn>
-            <RadzenGridColumn TItem="Meeting" Property="Date">
-                <Template>
-                    @String.Format("{0:d}");
-                </Template>
+            <RadzenGridColumn Title="@nameof(Meeting.MeetingId)" TItem="Meeting" Property="MeetingId"></RadzenGridColumn>
+            <RadzenGridColumn Title="@nameof(Meeting.Description)" TItem="Meeting" Property="Description"></RadzenGridColumn>
+            <RadzenGridColumn  Title="@nameof(Meeting.Date)" Format="dd/MM/yyyy" TItem="Meeting" Property="Date">
+                
             </RadzenGridColumn>
-            <RadzenGridColumn TItem="Meeting" Property="Host.UserName"></RadzenGridColumn>
-            <RadzenGridColumn TItem="Meeting" Property="Started"></RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting" Title="Host" Property="Host.UserName"></RadzenGridColumn>
+            <RadzenGridColumn TItem="Meeting"  Title="@nameof(Meeting.Started)"  Property="Started"></RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }
+</div>

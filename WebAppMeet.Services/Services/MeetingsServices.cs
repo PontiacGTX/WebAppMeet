@@ -213,12 +213,21 @@ namespace WebAppMeet.Services.Services
                 return Factory.GetResponse<Response>(null, statusCode: 404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meetings ") });
 
 
-            var meetings =await  repo.GetAll<UserMeetings,Meeting,Meeting > (
-                include:x=>x.Include(x=>x.User).Include(x=>x.Meeting).ThenInclude(x=>x.Host),
+            IList<Meeting> meetings = null;
+            try
+            {
+                meetings = await repo.GetAll<UserMeetings, Meeting, Meeting>(
+                include: x => x.Include(x => x.User).Include(x => x.Meeting).ThenInclude(x => x.Host),
                 whereClause: filter,
-                selector: x=>x,
-                groupBy:  x=>x.GroupBy(y=>y.Meeting), 
-                x=> (Meeting)x);
+                selector: x => x,
+                groupBy: x => x.GroupBy(y => y.Meeting),
+                x => x.Key);
+            }
+            catch (Exception ex)
+            {
+
+                throw;
+            }
 
 
             return Factory.GetResponse<Response>(meetings);

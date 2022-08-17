@@ -73,22 +73,23 @@ namespace WebAppMeet.DataAcess.Repository
         }
 
 
-        public async Task<IList<TGroupSelect>> GetAll<TEntity,TGroup,TGroupSelect>(Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
-           Expression<Func<T, bool>> whereClause = null, Expression<Func<T, TEntity>> selector = null,
-
-          Func<IQueryable<TEntity>, IQueryable<IGrouping<TGroup, TEntity>>> groupBy = null, 
-          Expression<Func<IGrouping<TGroup, TEntity>, TGroupSelect>> groupSelector = null)
+        public async Task<IList<TGroupSelect>> GetAll<TEntity, TGroup, TGroupSelect>(Func<IQueryable<T>, IIncludableQueryable<T, object>> include = null,
+          Expression<Func<T, bool>> whereClause = null, Expression<Func<T, TEntity>> selector = null,
+          Func<IList<TEntity>, IEnumerable<IGrouping<TGroup, TEntity>>> groupBy = null,
+          Func<IGrouping<TGroup, TEntity>, TGroupSelect> groupSelector = null)
         {
             var result = _ctx.Set<T>().AsQueryable();
 
             result = include(result);
 
-            var res = (whereClause is null ? result.Select(selector) : result.Where(whereClause).Select(selector));
+            var res = await (whereClause is null
+                       ? result.Select(selector)
+                       : result.Where(whereClause).Select(selector)
+                     ).ToListAsync();
 
             var group = groupBy(res);
 
-           
-            return await group.Select(groupSelector).ToListAsync();
+            return group.Select(groupSelector).ToList();
         }
 
         public async Task<T> AddAndSave(T entity)

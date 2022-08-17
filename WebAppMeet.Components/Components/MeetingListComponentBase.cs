@@ -101,7 +101,7 @@ namespace WebAppMeet.Components.Components
                         400 => PrintMessage("Error while requesting user", MeetingsResponse.Message),
                         404 => PrintMessage("Not Meetings were found", MeetingsResponse.Message),
                         500 => PrintMessage("A ServerError happened try again", MeetingsResponse.Message),
-                        200 => PrintMessage("Ok", MeetingsResponse.Message)
+                        200=> Task.FromResult("")
                     });
                     meetings = (MeetingsResponse?.Data as IList<Meeting>) ?? new List<Meeting>();
                 }
