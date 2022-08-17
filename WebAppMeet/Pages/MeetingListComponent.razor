@@ -27,6 +27,11 @@ else
             </RadzenGridColumn>
             <RadzenGridColumn TItem="Meeting" Title="Host" Property="Host.UserName"></RadzenGridColumn>
             <RadzenGridColumn TItem="Meeting"  Title="@nameof(Meeting.Started)"  Property="Started"></RadzenGridColumn>
+            <RadzenGridColumn Title="Action" TItem="Meeting" Property="Url"    >
+                <Template Context="data">
+                 <RadzenButton  Click=@(args => OnButtonClick(data.Url)) Text="Success" ButtonStyle="Radzen.ButtonStyle.Success" />
+                </Template>
+            </RadzenGridColumn>
         </Columns>
     </RadzenGrid>
 }

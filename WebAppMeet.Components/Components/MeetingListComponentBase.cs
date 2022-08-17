@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
@@ -38,7 +39,10 @@ namespace WebAppMeet.Components.Components
         protected IList<Meeting> meetings { get; set; }
         protected Response MeetingsResponse { get; set; }
 
-        
+        protected async Task OnButtonClick(string url)
+        {
+
+        }
         protected override async Task OnInitializedAsync()
         {
             var state = await _authenticationState;
