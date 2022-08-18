@@ -6,18 +6,14 @@
         </button>
     </div>
 </div>*@
-@inject AuthenticationStateProvider _AuthenticationStateProv
-@inject UserManager<AppUser> _userManager
 @code{
     string path = null;
-    protected string UserId { get; set; }
+    [CascadingParameter]
+    protected AppUser User{ get; set; }
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState;
-        authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync();
-        string user = authenticationState?.User?.Identity?.Name;
-        UserId = (await _userManager.Users.FirstOrDefaultAsync(x => x.Email == user))?.Id;
-        path = $"/ChatList/{(UserId??"0")}";
+       
+        path = $"/ChatList/{(User?.Id??"0")}";
     }
 }
  <nav class="nav-prop">

@@ -1,16 +1,30 @@
-﻿@inherits LayoutComponentBase
+﻿@inherits CustomLayoutComponentBase
+@code{
+    
 
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState;
+        authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync();
+        string user = authenticationState?.User?.Identity?.Name;
+        User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
+        
+    }
+}
 <PageTitle>WebAppMeet</PageTitle>
 <div >
-   <NavMenu />
+    <CascadingValue Value="User">
+         <NavMenu />
+   </CascadingValue>
 </div>
 <div class="page">
     
 
     <main>
-        
-        <article class="content px-4">
-            @Body
-        </article>
+        <CascadingValue Value="User">
+            <article class="content px-4">
+                @Body
+            </article>
+        </CascadingValue>
     </main>
 </div>

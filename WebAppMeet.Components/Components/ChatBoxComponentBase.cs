@@ -14,6 +14,8 @@ namespace WebAppMeet.Components.Components
         public List<string> MessageList { get; set; }
         public string Message { get; set; }
         public string HubId { get; set; }
+        [Parameter]
+        public EventCallback<string> OnSendMessage { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (MessageList == null)
@@ -22,7 +24,7 @@ namespace WebAppMeet.Components.Components
 
         protected async Task OnButtonSend(MouseEventArgs e)
         {
-
+            await OnSendMessage.InvokeAsync(Message);
         }
 
         public async Task ComponentStateHasChanged()

@@ -1,26 +1,22 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppMeet.Data;
-using WebAppMeet.Services.Services;
 
-namespace WebAppMeet.Components
+namespace WebAppMeet.Components.Components
 {
-    public class MeetingComponentBase:ComponentBase
+    public class CustomLayoutComponentBase:LayoutComponentBase
     {
-        [Parameter]
-        public int MeetingId { get; set; }
-        protected AuthenticationState _state { get; set; }
-        protected string UserId { get; set; }
-
         [Inject]
-        public MeetingsServices _meetingServices { get; set; }
+        public AuthenticationStateProvider _AuthenticationStateProv { get; set; }
         [Inject]
         public UserManager<AppUser> _userManager { get; set; }
+        protected AppUser User { get; set; }
     }
 }

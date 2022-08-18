@@ -34,6 +34,8 @@ namespace WebAppMeet.Components.Components
 
         [Parameter]
         public string idUser { get; set; }
+
+        
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if (firstRender)
@@ -48,6 +50,7 @@ namespace WebAppMeet.Components.Components
                     throw;
                 }
             }
+
         }
         protected async Task PrintMessage(string title, string message)
         {

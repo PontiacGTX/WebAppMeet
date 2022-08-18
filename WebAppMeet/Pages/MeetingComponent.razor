@@ -1,6 +1,7 @@
 ﻿@page "/Meeting/{MeetingId:int}"
+@using Microsoft.AspNetCore.SignalR.Client
 @inherits MeetingComponentBase
-@inject AuthenticationStateProvider _AuthenticationStateProv
+
 
 <h3>Meeting Component</h3>
 
@@ -8,19 +9,88 @@
 
 
 
-<ChatBoxComponent>
+<ChatBoxComponent @ref=ChatBox OnSendMessage="SendMessage" >
 
 </ChatBoxComponent>
 
 
 @code {
 
+    private Action<string, string> HubOnReceiveMessageDelegate;
+
+    Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
+       
 
-        UserId = (await _userManager.Users.FirstOrDefaultAsync(x => x.Email == _state.User.Identity.Name))?.Id;
-        
+        if(hub is null)
+            hub = new HubConnectionBuilder()
+                .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"))
+                .Build();
+
+        var meetingResponse =await _meetingServices.GetBy(x => x.MeetingId == this.MeetingId);
+        var meeting =meetingResponse.Data as Meeting;
+        int meetingId = meeting.MeetingId;
+
+        var userMeetingResponse =await _meetingServices.GetUserMeeting(MeetingId);
+
+        Func<Task> task = (userMeetingResponse.StatusCode switch
+        {
+
+            200 => async () => 
+            {
+                _UserMeetings = userMeetingResponse.Data as IList<UserMeetings>;
+
+                await Task.CompletedTask;
+            },
+            404 =>async () => 
+            { 
+                await PrintMessage(userMeetingResponse.Message, "No Invitees were found,please add new invitees to the meeting");
+
+                await Task.CompletedTask;
+            },
+            _=>async () => 
+            { 
+                await PrintMessage(userMeetingResponse.Message, "An unexpected error happened");
+                await Task.CompletedTask;
+            },
+
+        });
+
+        await task.Invoke();
+
+        if (userMeetingResponse.StatusCode != 200)
+            return;
+        HubOnReceiveMessageDelegate = OnReceiveMessage;
+        hub.On<string, string>($"ReceiveMessage", HubOnReceiveMessageDelegate);
+        hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
+        await hub.StartAsync();
     }
+    public async void OnReceiveMessage(string sender,string message)
+    {
+        var encodedMsg = $"{sender}: {message}";
+        ChatBox.MessageList.Add(encodedMsg);
+        await ChatBox.ComponentStateHasChanged();
 
+    }
+    private async Task SendMessage(string message)
+    {
+        if(string.IsNullOrEmpty(message))
+        {
+            await PrintMessage("Error", "Cannot send an empty message");
+            return;
+        }
+        if (hub is not null)
+        {
+
+            foreach (var user in _UserMeetings)
+            {
+                await hub.SendAsync("SendMessage", User.Email, user.User.Email,ChatBox.Message);
+            }
+
+          // await  ChatBox.ComponentStateHasChanged();
+        }
+    }
 }

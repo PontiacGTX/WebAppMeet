@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using WebAppMeet.Data.Entities;
 
 namespace WebAppMeet.Data
 {
+    [CascadingTypeParameter(name: "WebAppMeet.Data.AppUser")]
     public class AppUser : IdentityUser, IEntity
     {
 

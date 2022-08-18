@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using SharedProject.Factory;
 using WebAppMeet.Data;
@@ -45,6 +46,7 @@ builder.Services.AddScoped<AppUserStore>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<MeetingsServices>();
 
+builder.Services.AddSingleton<IUserIdProvider, CustomEmailProvider>();
 builder.Services.AddSignalR();
 builder.Services.AddResponseCompression(options => options.MimeTypes.Concat(new[] { "application/octet-stream" }));
 builder.Services.AddCors(options=>options.AddDefaultPolicy(builder=>builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));

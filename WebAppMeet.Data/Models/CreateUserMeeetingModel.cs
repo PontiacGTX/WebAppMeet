@@ -8,7 +8,7 @@ namespace WebAppMeet.Data.Models
 {
     public class CreateUserMeeetingModel
     {
-        public string HubId { get; set; }
+        public string HubId { get; set; } = "";
         public string HostId { get; set; }
         public string UserId { get; set; }
         public int MeetingId { get; set; }

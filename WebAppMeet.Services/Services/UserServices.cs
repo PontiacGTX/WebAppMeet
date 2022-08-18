@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppMeet.Data;
@@ -66,6 +67,8 @@ namespace WebAppMeet.Services.Services
             var user = new AppUser { UserName = model.Email.ToLower(), Email = model.Email.ToLower() };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, model.Email));
 
             if (!result.Succeeded)
                 return Factory.GetResponse<ErrorServerResponse>(null, messages: (new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError) }.Concat(result.Errors.Select(x => x.Description))).ToArray());

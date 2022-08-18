@@ -37,7 +37,7 @@ namespace WebAppMeet.Hubs
         //}
         //private object GetUserCall(UserConnectionRequest request,bool onlyFirst)
         //{
-            
+
         //    var matchingCall =
         //        meetingsRepository.FirstOrDefault(x => { return x.Include(x=>x.MeetingMembers); },x=>x.MeetingMembers.Any(x=>x.UserId == request.UserId && x.HubIdCon == request.HubConnectionId),X=>X.MeetingMembers ).GetAwaiter().GetResult();
 
@@ -89,7 +89,7 @@ namespace WebAppMeet.Hubs
         //}
         //public async Task Join(string username)
         //{
-          
+
         //    var callingUser = GetUserByEmail(new UserConnectionRequest {  HubConnectionId = Context.ConnectionId, UserId = username });
         //    callingUser.HubIdCon = Context.ConnectionId;
         //    userMeetingsRepository.UpdateAndSave(callingUser, callingUser.UserId).GetAwaiter().GetResult();
@@ -123,7 +123,7 @@ namespace WebAppMeet.Hubs
 
         //    // Make sure there is still an active offer.  If there isn't, then the other use hung up before the Callee answered.
         //    var meeting = GetMeeting(new UserConnectionRequest { HubConnectionId = targetConnectionId.HubIdCon, UserId = targetConnectionId.UserId });
-            
+
         //    if (meeting is null || meeting?.IsEnabled is false )
         //    {
         //        await Clients.Caller.CallEnded(targetConnectionId, string.Format("{0} has already hung up.", targetUser.User.Email));
@@ -151,7 +151,7 @@ namespace WebAppMeet.Hubs
         //    await Clients.Client(targetConnectionId.HubIdCon).CallAccepted(new UserConnectionRequest { HubConnectionId = targetConnectionId.HubIdCon, UserId = targetConnectionId.UserId });
 
         //    // Update the user list, since thes two are now in a call
-            
+
         //}
         //public async Task HangUp()
         //{
@@ -181,12 +181,23 @@ namespace WebAppMeet.Hubs
         //        }
         //    }
 
-      
-        //}
 
-        public async Task SendMessage(string username,string message)
+        //}
+        public async Task SendMessage(string sender, string receiver, string message)
         {
-           await Clients.All.SendAsync("ReceiveMessage", username, message);
+            var ctx = this.Context;
+            if(sender != receiver)
+            await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+            else
+          await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message); // this works await Clients.All.SendAsync("ReceiveMessage", receiver, message);
+        }
+        //public async Task SendMessage(string username,string message)
+        //{
+        //   await Clients.User(username).SendAsync("ReceiveMessage", message);
+        //}
+        public override async Task OnDisconnectedAsync(Exception exception)
+        {
+            
         }
     }
 }

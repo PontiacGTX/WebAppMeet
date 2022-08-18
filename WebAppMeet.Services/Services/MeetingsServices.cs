@@ -43,13 +43,17 @@ namespace WebAppMeet.Services.Services
             
 
             var repo = await GetRepository<Meeting>();
+
+            IList<Meeting> meetings = null;
             
-            var meetings = (await repo.GetAll<Meeting>(include: inc =>
+            
+                meetings =(await repo.GetAll<Meeting>(include: inc =>
                                                             inc.Include(x => x.MeetingMembers)
                                                            .Include(x => x.Host),
                                                        whereClause: x => x.HostId == model.HostId && x.Date == model.Date,
                                                        selector: x => x));
 
+     
             var any = meetings.Any(x => x != null);
 
             if (!any)
@@ -71,10 +75,22 @@ namespace WebAppMeet.Services.Services
             var meeting = repo.FirstOrDefault(x => x.MeetingId == idV);
 
             if (meeting is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "meeting") });
+                return Factory.GetResponse<ErrorServerResponse>(meeting, statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "meeting") });
             
 
             return Factory.GetResponse<Response>(meeting);
+        }
+
+        public async Task<Response> GetUserMeeting<TId>(TId meetingId)
+        {
+            int id = Convert.ToInt32(meetingId);
+            var repo = await GetRepository<UserMeetings>();
+            var   userMeetings =await repo.GetAll(include: x => x.Include(x=>x.User), whereClause:x => x.MeetingId == id,selector: x => x );
+
+            if (userMeetings is null)
+                return Factory.GetResponse<Response>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "User Meetings"), });
+
+            return Factory.GetResponse<Response>(userMeetings);
         }
 
         public async Task<Response> GetMeetingBy(Func<Meeting,bool> selector)
