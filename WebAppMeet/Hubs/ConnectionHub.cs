@@ -4,6 +4,7 @@ using WebAppMeet.Data.Entities;
 using WebAppMeet.DataAcess.Repository;
 using Microsoft.EntityFrameworkCore;
 using SharedProject.HubModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebAppMeet.Hubs
 {
@@ -17,6 +18,7 @@ namespace WebAppMeet.Hubs
         Task CallEnded(UserMeetings signalingUser, string signal);
         
     }
+    [Authorize]
     public class ConnectionHub:Hub/*<IConnectionHub>*/
     {
         EntityRepository<Meeting> meetingsRepository { get; set; }
@@ -183,13 +185,25 @@ namespace WebAppMeet.Hubs
 
 
         //}
+        public override async Task OnConnectedAsync()
+        {
+            if(!string.IsNullOrEmpty(Context.User?.Identity?.Name))
+            await Groups.AddToGroupAsync(Context.ConnectionId, Context.User.Identity.Name);
+
+            await base.OnConnectedAsync();
+        }
         public async Task SendMessage(string sender, string receiver, string message)
         {
-            var ctx = this.Context;
-            if(sender != receiver)
-            await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+            string name = Context.User.Identity.Name;
+            var ctx = this.Clients;
+
+            if (sender != receiver)
+                await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
             else
-          await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message); // this works await Clients.All.SendAsync("ReceiveMessage", receiver, message);
+            {
+                await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
+                await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+            }// this works await Clients.All.SendAsync("ReceiveMessage", receiver, message);
         }
         //public async Task SendMessage(string username,string message)
         //{
