@@ -15,6 +15,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using WebAppMeet.Data;
+using System.Net.Http;
+using Microsoft.Net.Http.Headers;
+using WebAppMeet.Services.Services;
+using Newtonsoft.Json;
+using WebAppMeet.Data.Models;
+using System.Text;
 
 namespace WebAppMeet.Areas.Identity.Pages.Account
 {
@@ -22,11 +28,15 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
     {
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
+        private readonly AuthTokenServices _authService;
 
-        public LoginModel(SignInManager<AppUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(SignInManager<AppUser> signInManager, ILogger<LoginModel> logger, AuthTokenServices authServices)
         {
             _signInManager = signInManager;
             _logger = logger;
+            _authService = authServices;
+
+
         }
 
         /// <summary>
@@ -115,6 +125,16 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
                 var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
+                    var response =await _authService.GetJWTToken(new Data.Models.UserTokenRequest { Password = Input.Password, UserName = Input.Email });
+                    if(response.StatusCode !=200)
+                    {
+
+                        TempData["ErrorLogin"] = response.Message;
+                        ModelState.AddModelError(string.Empty, response.Message);
+                        return Page();
+                    }
+                    
+                    this.Response.Headers[HeaderNames.Authorization] = Convert.ToBase64String(Encoding.UTF8.GetBytes(response.Data.ToString()));
                     _logger.LogInformation("User logged in.");
                     return LocalRedirect(returnUrl);
                 }

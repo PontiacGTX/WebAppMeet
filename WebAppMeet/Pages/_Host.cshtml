@@ -1,9 +1,35 @@
 ﻿@page "/"
 @namespace WebAppMeet.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@using Microsoft.AspNetCore.Components;
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+@using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
+@using WebAppMeet.Components.Helper;
+@using WebAppMeet.Pages;
+@using Microsoft.Net.Http.Headers;
+@using Microsoft.AspNetCore.Authentication;
+
+@inject IHttpContextAccessor  httpContextAccesor;
+
+
+
 @{
+  
+
     Layout = "_Layout";
+    //HttpResponseHeaders
+    var containsResponseHeaders = this.httpContextAccesor.HttpContext.Response.Headers[HeaderNames.Authorization].ToString();
+    var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
+    var item = await HttpContext.GetTokenAsync(HeaderNames.Authorization);
+   
+    ////var tokens = new 
+    ////{
+    ////    AccessToken = await HttpContext.GetTokenAsync("access_token"),
+    ////    RefreshToken = await HttpContext.GetTokenAsync("refresh_token")
+    ////};
+
 }
+
 
 <component type="typeof(App)" render-mode="ServerPrerendered" />
 

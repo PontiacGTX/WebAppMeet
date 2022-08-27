@@ -19,6 +19,9 @@ namespace WebAppMeet.DataAcess.DataContext
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<SKeyValues>().HasKey(x => x.SKeyValueId);
+            builder.Entity<SKeyValues>().Property(x => x.Key).IsRequired(true);
+
             builder.Entity<Meeting>().HasOne(x => x.Host).WithMany(x => x.HostedMeetings)
                 .OnDelete(DeleteBehavior.Restrict);
             builder.Entity<UserMeetings>().HasOne(x => x.User).WithMany(x => x.InvitedMeetings)

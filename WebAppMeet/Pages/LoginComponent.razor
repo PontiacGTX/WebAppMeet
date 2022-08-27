@@ -1,0 +1,68 @@
+﻿@page "/Login"
+@using WebAppMeet.Components.Components;
+@using  Microsoft.Net.Http.Headers;
+@inherits LoginBase
+@inject IHttpContextAccessor  httpContextAccesor;
+
+
+<EditForm Model="LoginModel" OnSubmit="OnLogIn">
+<div class="container-fluid">
+    <div class="center-container">
+        <h3>Login</h3>
+         <div class="form-group">
+             <label>Email</label>
+            <div class="form-control centerItem">
+                  
+                  <InputText class="centerItemMax" @bind-Value="@LoginModel.Email" ></InputText>
+                  <ValidationMessage For="()=>LoginModel.Email" ></ValidationMessage>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+             <div class="form-control">
+                    <InputText class="centerItemMax" type="password"  @bind-Value="@LoginModel.Password" ></InputText>
+                    <ValidationMessage For="()=>LoginModel.Password" ></ValidationMessage>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>StayLogged</label>
+             <div class="form-control">
+                    <input class="centerItemMax" type="checkbox"  @bind="LoginModel.StayLoggedIn" ></input>
+                    <ValidationMessage For="()=>LoginModel.StayLoggedIn" ></ValidationMessage>
+            </div>
+        </div>
+<div  class="flexContainer">
+    <button class="btn btn-primary centerItem"   type="submit">Login</button>
+</div>
+    </div>
+
+</div>
+
+</EditForm>
+
+
+
+
+
+
+@code{
+
+    protected async Task OnLogIn()
+    {
+
+        var response = await _authService.GetJWTToken(new Data.Models.UserTokenRequest { Password = LoginModel.Password, UserName = LoginModel.Email });
+        if (response.StatusCode != 200)
+        {
+            await PrintMessage("Error", response.Message);
+            return;
+
+        }
+        
+        await _localDataStorage.SetTokenAsync(response.Data.ToString());
+        httpContextAccesor.HttpContext.Request.Headers[HeaderNames.Authorization] = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(response.Data.ToString()));
+        _NavigationManager.NavigateTo( _NavigationManager.BaseUri,true);
+        }
+}
+
+
+

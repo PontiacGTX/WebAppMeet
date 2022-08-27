@@ -1,18 +1,27 @@
 ﻿@inherits CustomLayoutComponentBase
 @code{
-    
+
 
     protected override async Task OnInitializedAsync()
     {
-        AuthenticationState authenticationState;
-        authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync();
-        string user = authenticationState?.User?.Identity?.Name;
-        User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
-        
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            AuthenticationState authenticationState;
+            var token =await  _localDataStorage.GetTokenAsync();
+            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
+            string user = authenticationState?.User?.Identity?.Name;
+             User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
+        }
     }
 }
 <PageTitle>WebAppMeet</PageTitle>
 <div >
+    
     <CascadingValue Value="User">
          <NavMenu />
    </CascadingValue>

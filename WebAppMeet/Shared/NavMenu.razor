@@ -6,14 +6,38 @@
         </button>
     </div>
 </div>*@
+@using WebAppMeet.Components.Helper
+@using Microsoft.AspNetCore.Components.Authorization;
+@inject AuthenticationStateProvider auth
+@inject LocalStorage _localDataStorage 
+@inject UserManager<AppUser> _userManager
+@inject CustomAuthenticationStateProvider _AuthenticationStateProv 
+@inject NavigationManager _NavManager 
 @code{
     string path = null;
     [CascadingParameter]
     protected AppUser User{ get; set; }
     protected override async Task OnInitializedAsync()
     {
-       
-        path = $"/ChatList/{(User?.Id??"0")}";
+        path = $"/ChatList";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+
+            path = $"/ChatList/{(User?.Id??"0")}";
+        }
+    }
+    protected async Task RedirectToUrl()
+    {
+        AuthenticationState authenticationState;
+        var token =await  _localDataStorage.GetTokenAsync();
+        authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
+        string user = authenticationState?.User?.Identity?.Name;
+        User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
+        _NavManager.NavigateTo($"/ChatList/{(User?.Id??"0")}");
     }
 }
  <nav class="nav-prop">
@@ -22,7 +46,7 @@
                <label class="logo"><a  href="/"> Meet </a></label>
                <li id="ullink"> <a class="active" href="/"> Home </a> </li>
                <li id="ullink"> <a href="#">About  </a> </li>
-               <li id="ullink">  <a href="@path"> Meetings </a> </li>
+               <li id="ullink">  <a href="@path" @onclick="RedirectToUrl"> Meetings </a> </li>
                <li id="ullink"> <a href="#">Contact  </a> </li>
                <li id="icon"    @onmouseover="MakeMenuVisible"  >
                    <i class="fas fa-bars"></i>
@@ -31,11 +55,11 @@
                            <AuthorizeView>
                                <Authorized>
                                    <li class="listItemLogin"><NavLink href="/Profile">Profile</NavLink></li> 
-                                   <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/logout">Logout</NavLink></li> 
+                                   <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/Logout">Logout</NavLink></li> 
                                </Authorized>
                      
                               <NotAuthorized>
-                               <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/login">Login</NavLink></li>
+                               <li class="listItemLogin io io-lock-locked"><NavLink href="/Login">Login</NavLink></li>
                                <li class="listItemLogin"><NavLink href="/Register">Signup</NavLink></li> 
                                </NotAuthorized>
                           </AuthorizeView>
