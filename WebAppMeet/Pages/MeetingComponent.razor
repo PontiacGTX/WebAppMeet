@@ -1,8 +1,9 @@
 ﻿@page "/Meeting/{MeetingId:int}"
 @using Microsoft.AspNetCore.SignalR.Client
+@using WebAppMeet.Components.Helper
 @inherits MeetingComponentBase
 @inject IHttpContextAccessor  httpContextAccesor;
-
+@inject LocalStorage _localDataStorage 
 <h3>Meeting Component</h3>
 
 
@@ -16,60 +17,24 @@
 
 @code {
 
-    private Action<string, string> HubOnReceiveMessageDelegate;
-
-    Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
+ 
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
             _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
-        }
-    }
-    protected override async Task OnInitializedAsync()
-    {
-        
 
+           var token =await  _localDataStorage.GetTokenAsync();
 
-        if(hub is null)
+           if(hub is null)
             hub = new HubConnectionBuilder()
-                .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"))
+                .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"), options=>
+                {
+                    options.AccessTokenProvider = () => Task.FromResult(token);
+                })
                 .Build();
 
-        var meetingResponse =await _meetingServices.GetBy(x => x.MeetingId == this.MeetingId);
-        var meeting =meetingResponse.Data as Meeting;
-        int meetingId = meeting.MeetingId;
-
-        var userMeetingResponse =await _meetingServices.GetUserMeeting(MeetingId);
-
-        Func<Task> task = (userMeetingResponse.StatusCode switch
-        {
-
-            200 => async () => 
-            {
-                _UserMeetings = userMeetingResponse.Data as IList<UserMeetings>;
-
-                await Task.CompletedTask;
-            },
-            404 =>async () => 
-            { 
-                await PrintMessage(userMeetingResponse.Message, "No Invitees were found,please add new invitees to the meeting");
-
-                await Task.CompletedTask;
-            },
-            _=>async () => 
-            { 
-                await PrintMessage(userMeetingResponse.Message, "An unexpected error happened");
-                await Task.CompletedTask;
-            },
-
-        });
-
-        await task.Invoke();
-
-        if (userMeetingResponse.StatusCode != 200)
-            return;
         HubOnReceiveMessageDelegate = OnReceiveMessage;
         hub.On<string, string>($"ReceiveMessage", HubOnReceiveMessageDelegate);
         var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
@@ -77,6 +42,52 @@
 
         hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
         await hub.StartAsync();
+        }
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+
+
+      
+
+        var meetingResponse =await _meetingServices.GetBy(x => x.MeetingId == this.MeetingId);
+        var meeting =meetingResponse.Data as Meeting;
+        int meetingId = meeting.MeetingId;
+
+        _UserMeetingResponse =await _meetingServices.GetUserMeeting(MeetingId);
+
+        Func<Task> task = (_UserMeetingResponse.StatusCode switch
+        {
+
+            200 => async () => 
+            {
+                _UserMeetings = _UserMeetingResponse.Data as IList<UserMeetings>;
+
+                await Task.CompletedTask;
+            },
+            404 =>async () => 
+            { 
+                await PrintMessage(_UserMeetingResponse.Message, "No Invitees were found,please add new invitees to the meeting");
+
+                await Task.CompletedTask;
+            },
+            _=>async () => 
+            { 
+                await PrintMessage(_UserMeetingResponse.Message, "An unexpected error happened");
+                await Task.CompletedTask;
+            },
+
+        });
+
+        await task.Invoke();
+
+        if (_UserMeetingResponse.StatusCode != 200)
+            return;
+
+       
     }
     public async void OnReceiveMessage(string sender,string message)
     {

@@ -15,6 +15,7 @@ namespace WebAppMeet.Components.Components
 {
     public class MeetingComponentBase : ComponentBase
     {
+
         [Parameter]
         public int MeetingId { get; set; }
         protected AuthenticationState _state { get; set; }
@@ -35,6 +36,11 @@ namespace WebAppMeet.Components.Components
         public AppUser User { get; set; }
         protected IList<UserMeetings> _UserMeetings { get; set; }
         protected IJSObjectReference _module;
+        protected  Response _UserMeetingResponse {get; set; }
+
+        protected Action<string, string> HubOnReceiveMessageDelegate;
+
+        protected Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
