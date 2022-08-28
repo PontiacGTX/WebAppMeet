@@ -1,6 +1,8 @@
 ﻿@page "/Meeting/{MeetingId:int}"
 @using Microsoft.AspNetCore.SignalR.Client
 @using WebAppMeet.Components.Helper
+@using Newtonsoft.Json
+@using WebAppMeet.Data.Models
 @inherits MeetingComponentBase
 @inject IHttpContextAccessor  httpContextAccesor;
 @inject LocalStorage _localDataStorage 
@@ -17,7 +19,7 @@
 
 @code {
 
- 
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -25,13 +27,17 @@
         {
             _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
 
-           var token =await  _localDataStorage.GetTokenAsync();
+            var token =await  _localDataStorage.GetTokenAsync();
+            TokenResponse tokenObj = null;
 
-           if(hub is null)
+            if(token!=null)
+            tokenObj =JsonConvert.DeserializeObject<TokenResponse>(token);
+
+            if(hub is null)
             hub = new HubConnectionBuilder()
                 .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"), options=>
                 {
-                    options.AccessTokenProvider = () => Task.FromResult(token);
+                    options.AccessTokenProvider = () => Task.FromResult(tokenObj.Token);
                 })
                 .Build();
 

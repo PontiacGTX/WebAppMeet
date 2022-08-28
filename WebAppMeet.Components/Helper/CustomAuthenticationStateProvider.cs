@@ -66,7 +66,7 @@ namespace WebAppMeet.Components.Helper
             {
                 var claims = ParseJWTClaims(token).ToList();
                 claims.Add(new Claim(ClaimTypes.Name, claims.First(x=>x.Type=="email").Value));
-                var id = new ClaimsIdentity(claims, claims.First(x => x.Type == "email").Value);
+                var id = new ClaimsIdentity(claims, authType);
                 identity = new ClaimsIdentity(claims, authType);
                 identity.Actor = id;
                 user = new ClaimsPrincipal(identity);

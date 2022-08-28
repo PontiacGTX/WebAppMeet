@@ -1,4 +1,5 @@
 ﻿@inherits CustomLayoutComponentBase
+@inject IHttpContextAccessor _httpCtx
 @code{
 
 
@@ -13,7 +14,9 @@
         {
             AuthenticationState authenticationState;
             var token =await  _localDataStorage.GetTokenAsync();
-            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
+            WebAppMeet.Data.Models.TokenResponse tokenObj = null;
+            tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
+            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",tokenObj?.Token);
             string user = authenticationState?.User?.Identity?.Name;
              User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
         }

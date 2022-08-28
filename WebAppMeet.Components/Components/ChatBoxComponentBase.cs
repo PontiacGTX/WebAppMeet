@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace WebAppMeet.Components.Components
 {
-    public class ChatBoxComponentBase:ComponentBase
+    public class ChatBoxComponentBase : ComponentBase
     {
-       
+
         public List<string> MessageList { get; set; }
         public string Message { get; set; }
         public string HubId { get; set; }
@@ -24,9 +24,20 @@ namespace WebAppMeet.Components.Components
 
         protected async Task OnButtonSend(MouseEventArgs e)
         {
-            await OnSendMessage.InvokeAsync(Message);
+            await SendAndClear();
         }
-
+        protected async Task OnKeyPressed(KeyboardEventArgs e)
+        {
+            if (e.Key == "Enter")
+            {
+                await SendAndClear();
+            }
+        }
+        protected async Task SendAndClear()
+        {
+            await OnSendMessage.InvokeAsync(Message);
+            Message = "";
+        }
         public async Task ComponentStateHasChanged()
         {
             StateHasChanged();

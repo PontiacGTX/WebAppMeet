@@ -52,7 +52,7 @@ namespace WebAppMeet.Components.Components
 
             if (UserId == "0")
             {
-                _NavigationManager.NavigateTo("/identity/account/login", true);
+                _NavigationManager.NavigateTo("/login", true);
                 return;
             }
 

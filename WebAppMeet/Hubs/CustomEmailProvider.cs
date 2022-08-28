@@ -8,7 +8,7 @@ namespace WebAppMeet.Hubs
         public virtual string GetUserId(HubConnectionContext connection)
         {
             
-            var res = connection.User?.Claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier && x.Value == connection?.User?.Identity?.Name);
+            var res = connection.User?.Claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier);
             return res?.Value;
         }
     }
