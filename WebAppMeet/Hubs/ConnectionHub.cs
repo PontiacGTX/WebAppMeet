@@ -18,7 +18,7 @@ namespace WebAppMeet.Hubs
         Task CallEnded(UserMeetings signalingUser, string signal);
         
     }
-    [Authorize]
+    
     public class ConnectionHub:Hub/*<IConnectionHub>*/
     {
         EntityRepository<Meeting> meetingsRepository { get; set; }

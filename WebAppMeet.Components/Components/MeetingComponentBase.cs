@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppMeet.Data;
@@ -15,6 +17,7 @@ namespace WebAppMeet.Components.Components
 {
     public class MeetingComponentBase : ComponentBase
     {
+        protected Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
         [Parameter]
         public int MeetingId { get; set; }
         protected AuthenticationState _state { get; set; }
@@ -65,6 +68,36 @@ namespace WebAppMeet.Components.Components
 
                 throw;
             }
+
+
         }
+        protected Action<string, string> HubOnReceiveMessageDelegate;
+
+        public async void OnReceiveMessage(string sender, string message)
+        {
+            var encodedMsg = $"{sender}: {message}";
+            ChatBox.MessageList.Add(encodedMsg);
+            await ChatBox.ComponentStateHasChanged();
+
+        }
+        protected async Task SendMessage(string message)
+        {
+            if (string.IsNullOrEmpty(message))
+            {
+                await PrintMessage("Error", "Cannot send an empty message");
+                return;
+            }
+            if (hub is not null)
+            {
+
+                foreach (var user in _UserMeetings)
+                {
+                    await hub.SendAsync("SendMessage", User.Email, user.User.Email, ChatBox.Message);
+                }
+
+                // await  ChatBox.ComponentStateHasChanged();
+            }
+        }
+      
     }
 }
