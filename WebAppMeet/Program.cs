@@ -45,7 +45,7 @@ builder.Services.AddScoped(typeof(GenericFactory));
 builder.Services.AddScoped<AppUserStore>();
 builder.Services.AddScoped<UserServices>();
 builder.Services.AddScoped<MeetingsServices>();
-
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, CustomEmailProvider>();
 builder.Services.AddResponseCompression(options => options.MimeTypes.Concat(new[] { "application/octet-stream" }));
