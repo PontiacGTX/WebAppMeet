@@ -22,7 +22,7 @@
             _state = await _AuthenticationStateProv.GetAuthenticationStateAsync();
 
             Cookie returnedCookie=null;
-            
+            var cookie =this.httpContextAccesor.HttpContext.Request.Cookies.FirstOrDefault(x=>x.Key.Contains("Identity.Application"));
             if (hub is null)
                 hub = new HubConnectionBuilder()
                     .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"), options => {
