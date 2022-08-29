@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,13 @@ namespace WebAppMeet.Components.Components
 {
     public class ChatBoxComponentBase : ComponentBase
     {
+        protected ElementReference TextAreaRef;
 
+
+        [Inject]
+        protected IJSRuntime JS { get; set; }
+
+        private IJSObjectReference _module;
         public List<string> MessageList { get; set; }
         public string Message { get; set; }
         public string HubId { get; set; }
@@ -20,6 +27,28 @@ namespace WebAppMeet.Components.Components
         {
             if (MessageList == null)
                 MessageList = new List<string>();
+        }
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            if (firstRender)
+            {
+                try
+                {
+                    _module = await JS.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/InterOpLib.js");
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+
+        }
+
+        protected async Task ScrollToBottom()
+        {
+            
+            await _module.InvokeVoidAsync("scrollToEnd", new object[] { TextAreaRef });
         }
 
         protected async Task OnButtonSend(MouseEventArgs e)
@@ -37,6 +66,7 @@ namespace WebAppMeet.Components.Components
         {
             await OnSendMessage.InvokeAsync(Message);
             Message = "";
+            await ScrollToBottom();
         }
         public async Task ComponentStateHasChanged()
         {

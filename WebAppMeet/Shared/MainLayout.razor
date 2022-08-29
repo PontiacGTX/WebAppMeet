@@ -15,7 +15,10 @@
             AuthenticationState authenticationState;
             var token =await  _localDataStorage.GetTokenAsync();
             WebAppMeet.Data.Models.TokenResponse tokenObj = null;
+
+            if(!string.IsNullOrEmpty(token))
             tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
+
             authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",tokenObj?.Token);
             string user = authenticationState?.User?.Identity?.Name;
              User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));

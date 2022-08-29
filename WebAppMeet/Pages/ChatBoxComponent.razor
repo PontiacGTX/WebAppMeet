@@ -13,14 +13,20 @@
                 var text = string.Join("\n", MessageList);
 
                 <div style="float: left; width: 80%;">
-                        <textarea   disabled  style="width:100%; max-width: 100%;height:236px"  >@text  </textarea>
+                        <textarea @ref=TextAreaRef  disabled  style="width:100%; max-width: 100%;height:236px"  >@text  </textarea>
                 </div>
             }
         
-    <section class="col-md-2" >
+    <section class="container" >
          <div class="row">
+    
+    <div class="col-sm">
+        <div class="row">
              <textarea style="height:236px;resize: none;" @bind=Message  @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
         </div>
+    </div>
+  </div>
+       
         <div>
             <a class="btn btn-success"  @onclick="OnButtonSend" >Send</a>
         </div>
