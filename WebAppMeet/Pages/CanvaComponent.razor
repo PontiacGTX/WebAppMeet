@@ -1,0 +1,16 @@
+﻿@page "/CANVA"
+@inherits CanvaComponentBase
+
+<h3>CanvaComponent</h3>
+
+<section class="container">
+   
+        <canvas id="@CanvasId">
+        </canvas>
+   
+  
+    <div class="mb-3">
+        <InputFile OnChange="@OnFileSelected" class="form-control" type="file" id="formFile"  > </InputFile>
+    </div>
+    <button onclick="@LoadFile" class="btn btn-primary">Load</button>
+</section>
