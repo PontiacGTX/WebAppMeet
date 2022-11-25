@@ -87,12 +87,13 @@ namespace WebAppMeet.Components.Components
             {
                 userResult = await UserServices.Create<CreateUserModel>(UserCreationModel);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                await PrintMessage("An error happened", ex.Message);
+                return;
             }
 
-            if(userResult != null)
+            if (userResult != null)
             await (userResult.StatusCode switch
             {
                 400 => PrintMessage("Error while registering user", userResult.Message),
