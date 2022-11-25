@@ -35,10 +35,10 @@ builder.Services.AddServerSideBlazor();
 var conString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseNpgsql(conString), ServiceLifetime.Scoped);
+    options.UseSqlServer(conString), ServiceLifetime.Scoped);
 
 builder.Services
-    .AddDbContext<AppDbContext>(options => { options.UseNpgsql(conString); })
+    .AddDbContext<AppDbContext>(options => { options.UseSqlServer(conString); })
     .AddIdentity<AppUser, IdentityRole>(options => 
     {
         options.SignIn.RequireConfirmedAccount = true;
