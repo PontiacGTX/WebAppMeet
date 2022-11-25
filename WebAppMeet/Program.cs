@@ -32,7 +32,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-var conString = builder.Configuration.GetConnectionString("DefaultConnection");
+var conString = builder.Configuration.GetConnectionString("AppDbContextConnection");
 
 builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseSqlServer(conString), ServiceLifetime.Scoped);
