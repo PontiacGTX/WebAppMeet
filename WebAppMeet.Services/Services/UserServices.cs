@@ -67,6 +67,10 @@ namespace WebAppMeet.Services.Services
             var user = new AppUser { UserName = model.Email.ToLower(), Email = model.Email.ToLower() };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            if (!result.Succeeded)
+            {
+                throw new Exception($"{string.Join("\n", result.Errors.Select(x => $"{x.Description}"))}");
+            }
 
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, model.Email));
 
