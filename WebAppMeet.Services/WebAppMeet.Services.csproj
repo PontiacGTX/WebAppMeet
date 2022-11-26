@@ -7,11 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\SharedProject\SharedProject.csproj" />
+    <ProjectReference Include="..\WebAppMeet.DataAcess\WebAppMeet.DataAcess.csproj" />
+    <ProjectReference Include="..\WebAppMeet.Data\WebAppMeet.Data.csproj" />
   </ItemGroup>
 
 </Project>

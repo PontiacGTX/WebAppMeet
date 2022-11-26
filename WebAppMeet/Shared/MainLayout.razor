@@ -12,6 +12,7 @@
     {
         if(firstRender)
         {
+            var it =this._httpCtx.HttpContext.Response;
             AuthenticationState authenticationState;
             var token =await  _localDataStorage.GetTokenAsync();
             WebAppMeet.Data.Models.TokenResponse tokenObj = null;

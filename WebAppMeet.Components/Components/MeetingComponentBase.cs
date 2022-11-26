@@ -36,7 +36,7 @@ namespace WebAppMeet.Components.Components
         public AppUser User { get; set; }
         protected IList<UserMeetings> _UserMeetings { get; set; }
         protected IJSObjectReference _module;
-        protected  Response _UserMeetingResponse {get; set; }
+        protected  Response<IList<UserMeetings>> _UserMeetingResponse {get; set; }
 
         protected Action<string, string> HubOnReceiveMessageDelegate;
 

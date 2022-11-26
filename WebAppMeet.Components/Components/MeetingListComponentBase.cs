@@ -37,7 +37,7 @@ namespace WebAppMeet.Components.Components
 
         protected IJSObjectReference _module;
         protected IList<Meeting> meetings { get; set; }
-        protected Response MeetingsResponse { get; set; }
+        protected Response<IList<Meeting>> MeetingsResponse { get; set; }
 
         protected async Task OnButtonClick(string url,int meetingId)
         {

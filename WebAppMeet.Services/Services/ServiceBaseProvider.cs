@@ -1,6 +1,6 @@
-﻿using SharedProject.Factory;
-using WebAppMeet.Data;
+﻿using WebAppMeet.Data;
 using WebAppMeet.Data.Entities;
+using WebAppMeet.DataAcess.Factory;
 using WebAppMeet.DataAcess.Repository;
 
 namespace WebAppMeet.Services.Services
@@ -14,16 +14,10 @@ namespace WebAppMeet.Services.Services
         public async Task<GenericFactory> GetGenericRepository()
             => await Task.FromResult(_factory);
 
-        public virtual  Task<Response> Create<EntityModel>(EntityModel model)
-        {
-            return Task.FromResult(Factory.GetResponse<Response>(model));
-        }
+      
 
 
-        public virtual  Task<Response> Delete<TId>(TId id)
-        {
-            return  Task.FromResult(Factory.GetResponse<Response>(true));
-        }
+      
     }
 
 }

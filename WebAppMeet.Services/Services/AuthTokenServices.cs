@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WebAppMeet.Data;
+using WebAppMeet.Data.Models;
 
 namespace WebAppMeet.Services.Services
 {
@@ -21,11 +22,11 @@ namespace WebAppMeet.Services.Services
             _httpClient = httpClient;
             _hostingEnvironment = hostingEnvironment;
         }
-        public async Task<Response> GetJWTToken(WebAppMeet.Data.Models.UserTokenRequest request)
+        public async Task<Response<TokenResponse>> GetJWTToken(WebAppMeet.Data.Models.UserTokenRequest request)
         {
             var url = Url($"{await GetBaseUrl()}/Security/Token/Create");
             var response = await _httpClient.PostAsync(url, GetContent(request));
-            return GetResponse(await response.Content.ReadAsStringAsync());
+            return GetResponse<TokenResponse>(await response.Content.ReadAsStringAsync());
         }
        async Task<string> GetBaseUrl()
        {
@@ -39,8 +40,8 @@ namespace WebAppMeet.Services.Services
 
            return $"https://{ip}";
        }
-        protected Response GetResponse(string data)
-            =>  JsonConvert.DeserializeObject<Response>(data);
+        protected Response<T> GetResponse<T>(string data)
+            =>  JsonConvert.DeserializeObject<Response<T>>(data);
         protected HttpContent GetContent(object content)
             =>new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json");
 

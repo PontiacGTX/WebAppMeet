@@ -96,10 +96,12 @@ namespace WebAppMeet.Components.Helper
         {
             var x = base64.Length % 4;
             return Convert.FromBase64String((base64.Length % 4) switch
-           {
-               2 => base64 += "==",
-               3 => base64 += "="
-           });
+            {
+                0 => "",
+                2 => base64 += "==",
+                3 => base64 += "=",
+               _ => throw new Exception()
+           }) ;
         }
     } 
 }

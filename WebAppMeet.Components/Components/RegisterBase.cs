@@ -82,7 +82,7 @@ namespace WebAppMeet.Components.Components
 
             }
 
-            Response userResult = null;
+            Response<AppUser> userResult = null;
             try
             {
                 userResult = await UserServices.Create<CreateUserModel>(UserCreationModel);

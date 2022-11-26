@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using SharedProject.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Threading.Tasks;
 using WebAppMeet.Data;
 using WebAppMeet.Data.Entities;
 using WebAppMeet.Data.Models;
-using WebAppMeet.DataAcess.Repository;
+using WebAppMeet.DataAcess.Factory;
 
 namespace WebAppMeet.Services.Services
 {
@@ -22,7 +21,7 @@ namespace WebAppMeet.Services.Services
         }
 
 
-        public override async Task<Response> Create<EntityModel>(EntityModel Model)
+        public  async Task<Response<Meeting>> Create<EntityModel>(EntityModel Model)
         {
             var model = Model as CreateMeetingModel;
 
@@ -34,11 +33,11 @@ namespace WebAppMeet.Services.Services
             
             result =await repo.UpdateAndSave(result, result.MeetingId);
 
-            return  Factory.GetResponse<Response>(result);
+            return  Factory.GetResponse<Response<Meeting>,Meeting>(result);
         }
 
 
-        public  async Task<Response> CreateUserMeeting(CreateUserMeeetingModel model)
+        public  async Task<Response<UserMeetings>> CreateUserMeeting(CreateUserMeeetingModel model)
         {
             
 
@@ -57,43 +56,43 @@ namespace WebAppMeet.Services.Services
             var any = meetings.Any(x => x != null);
 
             if (!any)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting"), });
+                return Factory.GetResponse<ErrorServerResponse<UserMeetings>, UserMeetings>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting"), });
 
             var userMeetingsRepo = await GetRepository<UserMeetings>();
 
             var result = await userMeetingsRepo.AddAndSave(new UserMeetings { AllowGuestAccess = true, UserId = model.UserId, IsActive = false, IsHost = model.IsHost, MeetingId = model.MeetingId, HubIdCon = model.HubId });
 
-            return Factory.GetResponse<Response>(result);
+            return Factory.GetResponse<Response<UserMeetings>, UserMeetings>(result);
         }
 
-        public async Task<Response> GetBy<TId>(TId id)
+        public async Task<Response<Meeting>> GetBy<TId>(TId id)
         {
             int idV = Convert.ToInt32(id);
 
             var repo =await GetRepository<Meeting>();
 
-            var meeting = repo.FirstOrDefault(x => x.MeetingId == idV);
+            var meeting = await repo.FirstOrDefault(x => x.MeetingId == idV);
 
             if (meeting is null)
-                return Factory.GetResponse<ErrorServerResponse>(meeting, statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "meeting") });
+                return Factory.GetResponse<ErrorServerResponse<Meeting>,Meeting>(meeting, statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "meeting") });
             
 
-            return Factory.GetResponse<Response>(meeting);
+            return Factory.GetResponse<Response<Meeting>,Meeting>(meeting);
         }
 
-        public async Task<Response> GetUserMeeting<TId>(TId meetingId)
+        public async Task<Response<IList<UserMeetings>>> GetUserMeeting<TId>(TId meetingId)
         {
             int id = Convert.ToInt32(meetingId);
             var repo = await GetRepository<UserMeetings>();
             var   userMeetings =await repo.GetAll(include: x => x.Include(x=>x.User), whereClause:x => x.MeetingId == id,selector: x => x );
 
             if (userMeetings is null)
-                return Factory.GetResponse<Response>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "User Meetings"), });
+                return Factory.GetResponse<Response<IList<UserMeetings>>, IList<UserMeetings>>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "User Meetings"), });
 
-            return Factory.GetResponse<Response>(userMeetings);
+            return Factory.GetResponse<Response<IList<UserMeetings>>,IList<UserMeetings>>(userMeetings);
         }
 
-        public async Task<Response> GetMeetingBy(Func<Meeting,bool> selector)
+        public async Task<Response<Meeting>> GetMeetingBy(Func<Meeting,bool> selector)
         {
             var meetingrepo = await GetRepository<Meeting>();
 
@@ -107,13 +106,13 @@ namespace WebAppMeet.Services.Services
             var meeting = meetings?.FirstOrDefault(x=>x!=null);
 
             if (meeting is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting"),  });
+                return Factory.GetResponse<ErrorServerResponse<Meeting>,Meeting>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting"),  });
 
-            return Factory.GetResponse<Response>(meeting);
+            return Factory.GetResponse<Response<Meeting>,Meeting>(meeting);
 
         }
 
-        public async Task<Response> SetUserPresence(Expression<Func<UserMeetings,bool>> selector,Func<UserMeetings,UserMeetings> setter,bool isHost)
+        public async Task<Response<UserMeetings>> SetUserPresence(Expression<Func<UserMeetings,bool>> selector,Func<UserMeetings,UserMeetings> setter,bool isHost)
         {
             var userMeetingsrepo = await GetRepository<UserMeetings>();
 
@@ -125,11 +124,11 @@ namespace WebAppMeet.Services.Services
 
             var result =await userMeetingsrepo.UpdateAndSave(userMeeting, userMeeting.MeetingId);
 
-            return Factory.GetResponse<Response>(result);
+            return Factory.GetResponse<Response<UserMeetings>,UserMeetings>(result);
 
         }
 
-        async Task<Response> RemoveGuestByEmail(string guestEmail, int meetingId)
+        async Task<Response<bool?>> RemoveGuestByEmail(string guestEmail, int meetingId)
         {
             var meetingrepo = await GetRepository<Meeting>();
 
@@ -146,18 +145,18 @@ namespace WebAppMeet.Services.Services
             var guestmeeting = meeting?.MeetingMembers.FirstOrDefault(x => x.User.Email.ToLower() == email);
 
             if(guestmeeting is null)
-                return Factory.GetResponse<ErrorServerResponse>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "guest") });
+                return Factory.GetResponse<ErrorServerResponse<bool?>,bool?>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "guest") });
 
 
             var userMeetingsrepo = await GetRepository<UserMeetings>();
 
             bool deleted= await userMeetingsrepo.Delete(guestmeeting?.UserMeetingsId);
 
-            return Factory.GetResponse<Response>(deleted);
+            return Factory.GetResponse<Response<bool?>,bool?>(deleted);
         }
 
 
-        public async Task<Response> RemoveGuestById(string userId,int meetingId)
+        public async Task<Response<bool?>> RemoveGuestById(string userId,int meetingId)
         {
             var meetingrepo = await GetRepository<Meeting>();
 
@@ -174,18 +173,18 @@ namespace WebAppMeet.Services.Services
             var guestmeeting = meeting?.FirstOrDefault(x => x.UserId == userId);
 
             if (guestmeeting is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, statusCode: 404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "guest") });
+                return Factory.GetResponse<ErrorServerResponse<bool?>,bool?>(null, statusCode: 404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.BadRequestError, "guest") });
 
 
             var userMeetingsrepo = await GetRepository<UserMeetings>();
 
             bool deleted = await userMeetingsrepo.Delete(guestmeeting?.UserMeetingsId);
 
-            return Factory.GetResponse<Response>(deleted);
+            return Factory.GetResponse<Response<bool?>,bool?>(deleted);
         }
 
 
-        public async Task<Response> RemoveGuestBy(RemoveGuestByModel model)
+        public async Task<Response<bool?>> RemoveGuestBy(RemoveGuestByModel model)
         {
 
             return model.ParamType switch
@@ -197,15 +196,15 @@ namespace WebAppMeet.Services.Services
 
         }
 
+        
 
-
-        public async Task<Response> GetBy(Expression<Func<Meeting, bool>> selector)
+        public async Task<Response<Meeting>> GetBy(Expression<Func<Meeting, bool>> selector)
         {
             var repo = await GetRepository<Meeting>();
 
 
             if (!await repo.Any(selector))
-                return Factory.GetResponse<Response>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meetings ") });
+                return Factory.GetResponse<Response<Meeting>,Meeting>(null,statusCode:404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meetings ") });
 
 
 
@@ -220,17 +219,17 @@ namespace WebAppMeet.Services.Services
 
 
 
-            return Factory.GetResponse<Response>(meeting);
+            return Factory.GetResponse<Response<Meeting>,Meeting>(meeting);
         }
 
 
-        public async Task<Response> GeAllGroupByMeeting(Expression<Func<UserMeetings, bool>> filter)
+        public async Task<Response<IList<Meeting>>> GeAllGroupByMeeting(Expression<Func<UserMeetings, bool>> filter)
         {
             var repo = await GetRepository<UserMeetings>();
 
 
             if (!await repo.Any(filter))
-                return Factory.GetResponse<Response>(null, statusCode: 404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meetings ") });
+                return Factory.GetResponse<Response<IList<Meeting>>, IList<Meeting>>(null, statusCode: 404, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meetings ") });
 
 
             IList<Meeting> meetings = null;
@@ -250,17 +249,17 @@ namespace WebAppMeet.Services.Services
             }
 
 
-            return Factory.GetResponse<Response>(meetings);
+            return Factory.GetResponse<Response<IList<Meeting>>, IList<Meeting>>(meetings);
         }
 
-        public override async Task<Response> Delete<TId>(TId id)
+        public  async Task<Response<bool?>> Delete<TId>(TId id)
         {
             var repo = await GetRepository<Meeting>();
 
             int idV = Convert.ToInt32(id);
 
             if (!await repo.Any(x => x.MeetingId == idV))
-                return Factory.GetResponse<Response>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting") });
+                return Factory.GetResponse<Response<bool?>, bool?>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "meeting") });
 
             var meeting = await repo.FirstOrDefault(x => x.MeetingId == idV);
 
@@ -268,7 +267,7 @@ namespace WebAppMeet.Services.Services
 
             await repo.SaveChanges();
 
-            return Factory.GetResponse<Response>(meeting.IsEnabled);
+            return Factory.GetResponse<Response<bool?>, bool?>(meeting.IsEnabled);
         }
 
       

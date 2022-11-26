@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SharedProject.Factory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,7 @@ using System.Threading.Tasks;
 using WebAppMeet.Data;
 using WebAppMeet.Data.Entities;
 using WebAppMeet.Data.Models;
+using WebAppMeet.DataAcess.Factory;
 using WebAppMeet.DataAcess.Repository;
 
 namespace WebAppMeet.Services.Services
@@ -27,7 +27,7 @@ namespace WebAppMeet.Services.Services
             _userManager = userManager;
         }
 
-        public async Task<Response> UsersLike(string searchTerm)
+        public async Task<Response<List<string>>> UsersLike(string searchTerm)
         {
             var userRepo =await _factory.GetRepositoryAsync<AppUser>();
 
@@ -35,14 +35,14 @@ namespace WebAppMeet.Services.Services
 
             if(res is { Count:0})
             {
-                return Factory.GetResponse<Response>(res, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
+                return Factory.GetResponse<Response<List<string>>,List<string>>(res, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
             }
 
-            return Factory.GetResponse<Response>(res);
+            return Factory.GetResponse<Response<List<string>>, List<string>>(res);
         }
 
 
-        public async Task<Response> Exists(Expression<Func<AppUser, bool>> selector)
+        public async Task<Response<bool>> Exists(Expression<Func<AppUser, bool>> selector)
         {
             bool existe = false;
             try
@@ -54,15 +54,15 @@ namespace WebAppMeet.Services.Services
 
                 throw;
             }
-           return Factory.GetResponse<Response>(existe);
+           return Factory.GetResponse<Response<bool>,bool>(existe);
         }
-        public override async Task<Response> Create<EntityModel>(EntityModel Model)
+        public  async Task<Response<AppUser>> Create<EntityModel>(EntityModel Model)
         {
             var model = Model as CreateUserModel;
             string email = model.Email.ToLowerInvariant();
 
             if (await _userManager.Users.AnyAsync(x => x.Email.ToLower() == email))
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.AlreadyInUse, "email") });
+                return Factory.GetResponse<ErrorServerResponse<AppUser>,AppUser>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.AlreadyInUse, "email") });
 
             var user = new AppUser { UserName = model.Email.ToLower(), Email = model.Email.ToLower() };
 
@@ -75,17 +75,17 @@ namespace WebAppMeet.Services.Services
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, model.Email));
 
             if (!result.Succeeded)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: (new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError) }.Concat(result.Errors.Select(x => x.Description))).ToArray());
+                return Factory.GetResponse<ErrorServerResponse<AppUser>,AppUser>(null, messages: (new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError) }.Concat(result.Errors.Select(x => x.Description))).ToArray());
 
-            return Factory.GetResponse<Response>(user);
+            return Factory.GetResponse<Response<AppUser>,AppUser>(user);
         }
 
         
 
-        public async Task<Response> DeleteUser(string email)
+        public async Task<Response<bool?>> DeleteUser(string email)
         {
             if (!await _userManager.Users.AnyAsync(x => x.Email.ToLower() == email))
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
+                return Factory.GetResponse<ErrorServerResponse<bool?>,bool?> (null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
 
             var repo =await GetRepository<AppUser>();
             email = email.ToLower();
@@ -94,41 +94,41 @@ namespace WebAppMeet.Services.Services
             user.IsEnabled = false;
 
             bool saved= await repo.SaveChanges();
-            return Factory.GetResponse<Response>(saved);
+            return Factory.GetResponse<Response<bool?>,bool?>(saved);
         }
 
 
-        public async Task<Response> Update(AppUser appUser)
+        public async Task<Response<AppUser>> Update(AppUser appUser)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == appUser.Id);
 
             if (user is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "user") });
+                return Factory.GetResponse<ErrorServerResponse<AppUser>,AppUser>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "user") });
 
             var repo = await GetRepository<AppUser>();
 
             var updated = await repo.UpdateAndSave(appUser, appUser.Id);
 
             if (updated is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError), "The user couldnt be updated" });
+                return Factory.GetResponse<ErrorServerResponse<AppUser>,AppUser>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError), "The user couldnt be updated" });
 
-            return Factory.GetResponse<Response>(updated);
+            return Factory.GetResponse<Response<AppUser>,AppUser>(updated);
         }
-        public async Task<Response> GetBy<TId>(TId id)
+        public async Task<Response<AppUser>> GetBy<TId>(TId id)
         {
             string idV = Convert.ToString(id);
 
             var user= await _userManager.Users.FirstOrDefaultAsync(x => x.Id == idV);
             if(user is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "user") });
+                return Factory.GetResponse<ErrorServerResponse<AppUser>, AppUser>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "user") });
           
             var cpy = user.Copy();
 
             
-            return Factory.GetResponse<Response>(cpy);
+            return Factory.GetResponse<Response<AppUser>,AppUser>(cpy);
         }
 
-        public async Task<Response> GetUser(string email)
+        public async Task<Response<AppUser>> GetUser(string email)
         {
 
             email = email.ToLower();
@@ -136,12 +136,12 @@ namespace WebAppMeet.Services.Services
             var user = await _userManager.Users.FirstOrDefaultAsync(x => x.Email.ToLower() == email);
 
             if (user is null)
-                return Factory.GetResponse<ErrorServerResponse>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
+                return Factory.GetResponse<ErrorServerResponse<AppUser>, AppUser>(null, messages: new string[] { Factory.GetStringResponse(StringResponseEnum.NotFound, "email") });
 
             var cpy = user.Copy();
 
             
-            return Factory.GetResponse<Response>(cpy);
+            return Factory.GetResponse<Response<AppUser>,AppUser>(cpy);
         }
     }
 }

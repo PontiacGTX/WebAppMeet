@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
-using SharedProject.Factory;
 using SharedProject.HelperClass;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -21,6 +20,7 @@ using WebAppMeet.Data;
 using WebAppMeet.Data.Entities;
 using WebAppMeet.Data.Models;
 using WebAppMeet.DataAcess.DataContext;
+using WebAppMeet.DataAcess.Factory;
 using WebAppMeet.DataAcess.Repository;
 using WebAppMeet.DataAcess.UserStore;
 using WebAppMeet.Hubs;
@@ -236,11 +236,11 @@ app.UseEndpoints(endPoints => { endPoints.MapHub<ConnectionHub>("/ConnectionsHub
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
-                return Results.Ok(Factory.GetResponse<Response>(new TokenResponse { Token = jwtToken, Expiration = expiry }));
+                return Results.Ok(Factory.GetResponse<Response<TokenResponse>, TokenResponse>(new TokenResponse { Token = jwtToken, Expiration = expiry }));
 
             }
         }
-        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response>(null, 401,false,Factory.GetStringResponse(StringResponseEnum.Unathorized))));
+        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response<TokenResponse>, TokenResponse>(null, 401,false,Factory.GetStringResponse(StringResponseEnum.Unathorized))));
     });
 
     app.MapPost("/Security/Token/Validate",
@@ -272,15 +272,17 @@ app.UseEndpoints(endPoints => { endPoints.MapHub<ConnectionHub>("/ConnectionsHub
                 var accountId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // return account id from JWT token if validation successful
-                return Results.Ok(accountId);
+
+                Results.Ok(Factory.GetResponse<Response<int?>, int?>(accountId));
+               
             }
         }
         catch(Exception ex)
         {
             // return null if validation fails
-            return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response>(null, 401, false, Factory.GetStringResponse(StringResponseEnum.Unathorized))));
+            return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response<int?>,int?>(null, 401, false, Factory.GetStringResponse(StringResponseEnum.Unathorized))));
         }
-        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response>(null, 401, false, Factory.GetStringResponse(StringResponseEnum.Unathorized))));
+        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response<int?>, int?>(null, 401, false, Factory.GetStringResponse(StringResponseEnum.Unathorized))));
     });
 });
 

@@ -8,7 +8,7 @@ using WebAppMeet.Data.Entities;
 using WebAppMeet.DataAcess.DataContext;
 using WebAppMeet.DataAcess.Repository;
 
-namespace SharedProject.Factory
+namespace WebAppMeet.DataAcess.Factory
 {
     public class GenericFactory:IDisposable
     {

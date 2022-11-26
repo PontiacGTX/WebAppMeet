@@ -137,7 +137,7 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
                     this.Response.Headers[HeaderNames.Authorization] = Convert.ToBase64String(Encoding.UTF8.GetBytes(response.Data.ToString()));
                     Request.Headers[HeaderNames.Authorization]= Convert.ToBase64String(Encoding.UTF8.GetBytes(response.Data.ToString()));
                     _logger.LogInformation("User logged in.");
-                    return LocalRedirect(returnUrl);
+                    return LocalRedirect("/");
                 }
                 if (result.RequiresTwoFactor)
                 {

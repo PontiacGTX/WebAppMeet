@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using SharedProject.Factory;
 using WebAppMeet.Data.Entities;
 using WebAppMeet.DataAcess.Repository;
 using Microsoft.EntityFrameworkCore;
 using SharedProject.HubModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using WebAppMeet.DataAcess.Factory;
+
 namespace WebAppMeet.Hubs
 {
     public interface IConnectionHub

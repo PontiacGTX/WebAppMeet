@@ -3,13 +3,16 @@
 
 @{
     ViewData["Title"] = "Log in";
+    string cookieToken, formToken;
+    var cookiesAntiforgery = Request.Cookies.Where(x => x.Key.Contains("AspNetCore.Antiforgery"))
+    .Select(x=> new{ key = x.Key, value =x.Value}).ToList() ;
 }
 
 <h1>@ViewData["Title"]</h1>
 <div class="row">
     <div class="col-md-4">
         <section>
-            <form id="account" method="post">
+            <form id="none" method="post">
                 <h2>Use a local account to log in.</h2>
                 <hr />
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -26,13 +29,13 @@
                 <div>
                     <div class="checkbox">
                         <label asp-for="Input.RememberMe" class="form-label">
-                            <input class="form-check-input" asp-for="Input.RememberMe" />
+                            <input onclick="changeValueCheckRememberMe(event)" class=" form-check-input" asp-for="Input.RememberMe" value="true">
                             @Html.DisplayNameFor(m => m.Input.RememberMe)
                         </label>
                     </div>
                 </div>
                 <div>
-                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Log in</button>
+                    <button id="login-submit" type="button" class="w-100 btn btn-lg btn-primary" onclick="loginUser()">Log in</button>
                 </div>
                 <div>
                     <p>
@@ -81,5 +84,66 @@
 </div>
 
 @section Scripts {
+
+    <script>
+        var rememberMeCheck;
+        async function changeValueCheckRememberMe(e){
+            if (rememberMeCheck==null){
+                rememberMeCheck = e.target.value;
+            }
+            else
+            {
+                rememberMeCheck = !rememberMeCheck;
+            }
+            document.getElementById(e.target.id).value=rememberMeCheck;
+            
+        }
+        async function  loginUser(){
+            let tokenHTMLElement = '@Html.AntiForgeryToken()';
+            let begin = tokenHTMLElement.indexOf('value="', 1)+7;
+            let end = tokenHTMLElement.indexOf('" />', 1);
+            let antiforgeryToken =tokenHTMLElement.substr(begin, end - begin);
+       
+          
+           let datos={
+               'Email':document.getElementById('Input_Email').value,
+               'Password': document.getElementById('Input_Password').value,
+               'RememberMe': !document.getElementById('Input_RememberMe').value
+           }
+           console.log(datos);
+            
+
+            try
+            {
+                console.log( document.getElementsByName('__RequestVerificationToken').value)
+                let url ='/Identity/Account/Redirect?returnUrl=/identity/account/logout';
+                 const response = await fetch(url, {
+                       method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                        headers: {
+                            'Content-Type': 'application/json',
+                        'RequestVerificationToken': antiforgeryToken
+                        },
+                        redirect: 'follow', // manual, *follow, error
+                        referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                        body: JSON.stringify(datos) // body data type must match "Content-Type" header
+                      });
+                
+               let json =await response.json();
+               console.log(json);
+                //let response =  fetch(, {
+                //method: "post",
+                //body: JSON.stringify(datos),
+                //headers: { "content-type": "application/json" }
+                //})
+                //.then(response => response.json())
+                //    .then(json => console.log(json))
+                //    .catch (err => console.log(err));
+            }catch(e)
+            {
+                console.log(e)
+            }
+            
+        }
+    </script>
     <partial name="_ValidationScriptsPartial" />
 }

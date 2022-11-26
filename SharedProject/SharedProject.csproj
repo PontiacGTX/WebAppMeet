@@ -7,12 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebAppMeet.DataAcess\WebAppMeet.DataAcess.csproj" />
+    <Folder Include="HelperClass\" />
+    <Folder Include="Validations\" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="HelperClass\" />
-    <Folder Include="Validations\" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 
 </Project>
