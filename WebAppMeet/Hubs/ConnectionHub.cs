@@ -6,6 +6,8 @@ using SharedProject.HubModels;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using WebAppMeet.DataAcess.Factory;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace WebAppMeet.Hubs
 {
@@ -19,15 +21,15 @@ namespace WebAppMeet.Hubs
         Task CallEnded(UserMeetings signalingUser, string signal);
         
     }
-    [Authorize]
+    //[Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     public class ConnectionHub:Hub/*<IConnectionHub>*/
     {
         EntityRepository<Meeting> meetingsRepository { get; set; }
         EntityRepository<UserMeetings> userMeetingsRepository { get; set; }
-        public ConnectionHub(GenericFactory genericFactory)
+        public ConnectionHub(/*GenericFactory genericFactory*/)
         {
-            meetingsRepository = genericFactory.GetRepository<Meeting>();
-            userMeetingsRepository = genericFactory.GetRepository<UserMeetings>();
+            //meetingsRepository = genericFactory.GetRepository<Meeting>();
+            //userMeetingsRepository = genericFactory.GetRepository<UserMeetings>();
 
         }
 

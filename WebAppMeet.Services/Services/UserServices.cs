@@ -73,6 +73,7 @@ namespace WebAppMeet.Services.Services
             }
 
             await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, model.Email));
+            await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, model.Email));
 
             if (!result.Succeeded)
                 return Factory.GetResponse<ErrorServerResponse<AppUser>,AppUser>(null, messages: (new string[] { Factory.GetStringResponse(StringResponseEnum.InternalServerError) }.Concat(result.Errors.Select(x => x.Description))).ToArray());

@@ -5,7 +5,7 @@
 @using WebAppMeet.Data.Models
 @inherits MeetingComponentBase
 @inject IHttpContextAccessor  httpContextAccesor;
-@inject LocalStorage _localDataStorage 
+
 <h3>Meeting Component</h3>
 
 
@@ -21,32 +21,46 @@
 
 
 
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
+            try
+            {
+                _module = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./js/InterOpLib.js");
+            }
+            catch (Exception)
+            {
+
+            }
             _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
 
-            var token =await  _localDataStorage.GetTokenAsync();
+            var token =await  TryGetToken();
             TokenResponse tokenObj = null;
 
-            if(token!=null)
-            tokenObj =JsonConvert.DeserializeObject<TokenResponse>(token);
+
 
             if(hub is null)
-            hub = new HubConnectionBuilder()
-                .WithUrl(_NavigationManager.ToAbsoluteUri("/ConnectionsHub"), options=>
-                {
-                    options.AccessTokenProvider = () => Task.FromResult(tokenObj.Token);
-                })
-                .Build();
+                hub = new HubConnectionBuilder()
+                    .WithUrl($"https://localhost:7044/ConnectionsHub?access_token={token}"/*_NavigationManager.ToAbsoluteUri($"/ConnectionsHub?access_token={token}")*/, options=>
+                    {
+                        options.AccessTokenProvider = () => Task.FromResult(token);
+                        options.UseDefaultCredentials = false;
+                        //options.Credentials = 
+                        options.Credentials = System.Net.CredentialCache.DefaultCredentials;
+                        options.Headers.Add("Authorization", $"Bearer {token}");
+                    })
+                    .WithAutomaticReconnect()
+                    .Build();
 
         HubOnReceiveMessageDelegate = OnReceiveMessage;
         hub.On<string, string>($"ReceiveMessage", HubOnReceiveMessageDelegate);
         var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
         var cookie =containsCookies["Application.Identity"];
 
-        hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
+        //hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
         await hub.StartAsync();
         }
     }
@@ -120,4 +134,6 @@
           // await  ChatBox.ComponentStateHasChanged();
         }
     }
+
+
 }

@@ -123,6 +123,7 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Email, Input.Email));
+                    await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.NameIdentifier, Input.Email));
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);

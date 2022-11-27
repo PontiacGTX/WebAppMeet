@@ -7,70 +7,84 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebAppMeet.Components.Helper;
 using WebAppMeet.Data;
 using WebAppMeet.Data.Entities;
 using WebAppMeet.Services.Services;
 
-namespace WebAppMeet.Components.Components
+namespace WebAppMeet.Components.Components;
+
+public class MeetingComponentBase : ComponentBase
 {
-    public class MeetingComponentBase : ComponentBase
+
+    [Parameter]
+    public int MeetingId { get; set; }
+    protected AuthenticationState _state { get; set; }
+    protected string UserId { get; set; }
+    protected ChatBoxComponentBase ChatBox { get; set; }
+    [Inject]
+    protected AuthenticationStateProvider _AuthenticationStateProv { get; set; }
+    [Inject]
+    protected NavigationManager _NavigationManager { get; set; }
+
+    [Inject]
+    public MeetingsServices _meetingServices { get; set; }
+    [Inject]
+    public UserManager<AppUser> _userManager { get; set; }
+    [Inject]
+    protected IJSRuntime JS { get; set; }
+    [CascadingParameter]
+    public AppUser User { get; set; }
+    protected IList<UserMeetings> _UserMeetings { get; set; }
+    protected IJSObjectReference _module;
+    protected  Response<IList<UserMeetings>> _UserMeetingResponse {get; set; }
+
+    protected Action<string, string> HubOnReceiveMessageDelegate;
+    [Inject]
+    protected LocalStorage _localDataStorage { get; set; }
+    protected Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
+    protected async Task<string> getTokenJs()
     {
-
-        [Parameter]
-        public int MeetingId { get; set; }
-        protected AuthenticationState _state { get; set; }
-        protected string UserId { get; set; }
-        protected ChatBoxComponentBase ChatBox { get; set; }
-        [Inject]
-        protected AuthenticationStateProvider _AuthenticationStateProv { get; set; }
-        [Inject]
-        protected NavigationManager _NavigationManager { get; set; }
-
-        [Inject]
-        public MeetingsServices _meetingServices { get; set; }
-        [Inject]
-        public UserManager<AppUser> _userManager { get; set; }
-        [Inject]
-        IJSRuntime JS { get; set; }
-        [CascadingParameter]
-        public AppUser User { get; set; }
-        protected IList<UserMeetings> _UserMeetings { get; set; }
-        protected IJSObjectReference _module;
-        protected  Response<IList<UserMeetings>> _UserMeetingResponse {get; set; }
-
-        protected Action<string, string> HubOnReceiveMessageDelegate;
-
-        protected Microsoft.AspNetCore.SignalR.Client.HubConnection hub { get; set; }
-
-        protected override async Task OnAfterRenderAsync(bool firstRender)
+        return await _module.InvokeAsync<string>("getLocalStorageToken");
+    }
+    protected async Task<string> TryGetToken()
+    {
+        try
         {
-            if (firstRender)
-            {
-                try
-                {
-                    _module = await JS.InvokeAsync<IJSObjectReference>(
-                    "import", "./js/InterOpLib.js");
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
+            var token = await _localDataStorage.GetTokenAsync();
+            if (token == null)
+                throw new Exception();
+            return token;
         }
-
-        protected async Task PrintMessage(string title, string message)
+        catch
         {
-
             try
             {
-                var item = _module.InvokeVoidAsync("showAlert", title, message);
 
+                return await getTokenJs();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-
-                throw;
             }
+            return null;
         }
     }
+
+       
+
+    protected async Task PrintMessage(string title, string message)
+    {
+
+        try
+        {
+            var item = _module.InvokeVoidAsync("showAlert", title, message);
+
+        }
+        catch (Exception ex)
+        {
+
+            throw;
+        }
+    }
+
 }

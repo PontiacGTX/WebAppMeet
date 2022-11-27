@@ -93,7 +93,7 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
                     response.Data ,
                     response.Validation,
                     Redirect = "/",
-                    TokenBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes((response.Data as TokenResponse).Token))
+                    TokenBase64 = (response.Data as TokenResponse).Token
                  });
             }
             if (result.RequiresTwoFactor)
