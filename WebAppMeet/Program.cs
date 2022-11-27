@@ -100,18 +100,8 @@ builder.Services.AddAuthentication(options =>
                     context.Token = accessToken;
                     if(context.HttpContext?.User?.Identity?.Name==null && !string.IsNullOrEmpty(accessToken))
                     {
-                        ClaimsIdentity identity = null;
-                        ClaimsPrincipal user = null;
-                        //AuthenticationState state = null;
-                        string authType = "jwt";
-                        var claims = ParseJWTClaims(accessToken).ToList();
-                        claims.Add(new System.Security.Claims.Claim(ClaimTypes.Name, claims.First(x => x.Type == "email").Value));
-                        var id = new ClaimsIdentity(claims, authType);
-                        identity = new ClaimsIdentity(claims, authType);
-                        identity.Actor = id;
-                        user = new ClaimsPrincipal(identity);
-                        //state = new AuthenticationState(user);
-                        context.HttpContext.User = user;
+                        
+                        context.HttpContext.User = GetUser(accessToken);
                     }
                     context.Response.Headers.Authorization = accessToken;
                     Console.Write(context.Scheme.Name);
@@ -204,6 +194,21 @@ byte[] ParseBase64WihoutPadding(string base64)
         _ => base64,
 
     });
+}
+
+ClaimsPrincipal GetUser(string accessToken)
+{
+    ClaimsIdentity identity = null;
+    ClaimsPrincipal user = null;
+    //AuthenticationState state = null;
+    string authType = "jwt";
+    var claims = ParseJWTClaims(accessToken).ToList();
+    claims.Add(new System.Security.Claims.Claim(ClaimTypes.Name, claims.First(x => x.Type == "email").Value));
+    var id = new ClaimsIdentity(claims, authType);
+    identity = new ClaimsIdentity(claims, authType);
+    identity.Actor = id;
+    user = new ClaimsPrincipal(identity);
+    return user;
 }
 
 builder.Services.AddScoped(typeof(EntityRepository<>));

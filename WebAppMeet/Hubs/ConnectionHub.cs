@@ -26,10 +26,10 @@ namespace WebAppMeet.Hubs
     {
         EntityRepository<Meeting> meetingsRepository { get; set; }
         EntityRepository<UserMeetings> userMeetingsRepository { get; set; }
-        public ConnectionHub(/*GenericFactory genericFactory*/)
+        public ConnectionHub(GenericFactory genericFactory)
         {
-            //meetingsRepository = genericFactory.GetRepository<Meeting>();
-            //userMeetingsRepository = genericFactory.GetRepository<UserMeetings>();
+            meetingsRepository = genericFactory.GetRepository<Meeting>();
+            userMeetingsRepository = genericFactory.GetRepository<UserMeetings>();
 
         }
 
