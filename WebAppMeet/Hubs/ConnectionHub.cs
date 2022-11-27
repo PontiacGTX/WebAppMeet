@@ -190,7 +190,7 @@ namespace WebAppMeet.Hubs
         //}
         public override async Task OnConnectedAsync()
         {
-            var userName = Context.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var userName = Context.User?.Claims.FirstOrDefault(x => x.Type == "email")?.Value;
 
             if (!string.IsNullOrEmpty(userName))
                   await Groups.AddToGroupAsync(Context.ConnectionId, userName);

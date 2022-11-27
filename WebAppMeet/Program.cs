@@ -98,7 +98,7 @@ builder.Services.AddAuthentication(options =>
                      //options.Authority =options.Authority.Replace("{0}", accessToken);
                     // Read the token out of the query string
                     context.Token = accessToken;
-                    if(context.HttpContext.User==null && !string.IsNullOrEmpty(accessToken))
+                    if(context.HttpContext?.User?.Identity?.Name==null && !string.IsNullOrEmpty(accessToken))
                     {
                         ClaimsIdentity identity = null;
                         ClaimsPrincipal user = null;
