@@ -112,12 +112,12 @@
            }
            console.log(datos);
             
-
+           let response;
             try
             {
                 console.log( document.getElementsByName('__RequestVerificationToken').value)
                 let url ='/Identity/Account/Redirect?returnUrl=/identity/account/logout';
-                 const response = await fetch(url, {
+                  response = await fetch(url, {
                        method: 'POST', // *GET, POST, PUT, DELETE, etc.
                         headers: {
                             'Content-Type': 'application/json',
@@ -127,9 +127,15 @@
                         referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
                         body: JSON.stringify(datos) // body data type must match "Content-Type" header
                       });
-                
+
                let json =await response.json();
-               console.log(json);
+                console.log(json.tokenBase64)
+                if (json.tokenBase64!=undefined)
+                window.localStorage.setItem('accessToken.js', json.tokenBase64);
+
+                
+                window.localStorage.setItem('tokenData.js', JSON.stringify(json.data));
+                window.location.href = json.redirect;
                 //let response =  fetch(, {
                 //method: "post",
                 //body: JSON.stringify(datos),
@@ -141,6 +147,7 @@
             }catch(e)
             {
                 console.log(e)
+                console.log(response)
             }
             
         }

@@ -25,3 +25,15 @@ export function exportToCanvas(base64,canvasId) {
     myCanvas = document.getElementById(canvasId);
     console.log("canvas1 " + myCanvas);
 }
+
+export function getLocalStorageToken() {
+   let x= window.localStorage.getItem('accessToken.js');
+    console.log(x);
+    return x;
+}
+
+export function getLocalStorageTokenData() {
+    var obj = window.localStorage.getItem('tokenData.js');
+    return obj;
+
+}

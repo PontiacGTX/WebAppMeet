@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using WebAppMeet.Data;
 using WebAppMeet.Data.Models;
+using WebAppMeet.DataAcess.Factory;
 using WebAppMeet.Services.Services;
 
 namespace WebAppMeet.Areas.Identity.Pages.Account
@@ -41,12 +42,14 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
         private readonly SignInManager<AppUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
         private readonly AuthTokenServices _authService;
+        private readonly UserManager<AppUser> _userManager;
 
-        public ReditectModel(SignInManager<AppUser> signInManager, ILogger<LoginModel> logger, AuthTokenServices authServices)
+        public ReditectModel(SignInManager<AppUser> signInManager,UserManager<AppUser> userManager, ILogger<LoginModel> logger, AuthTokenServices authServices)
         {
             _signInManager = signInManager;
             _logger = logger;
             _authService = authServices;
+            _userManager = userManager;
 
 
         }
@@ -56,6 +59,12 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
         //[HttpPost("/Identity/")]
         public async Task<IActionResult> OnPostAsync([FromBody] InputModel model,[FromQuery] string returnUrl = null)
         {
+            //if(!_userManager.Users.Any(x=>x.UserName.ToLowerInvariant() == model.Email.ToLowerInvariant()))
+            //{
+
+            //    return StatusCode(StatusCodes.Status401Unauthorized, Factory.GetResponse<ErrorServerResponse<object>, object>(null, 401, false, new[] {"Username is not valid "}));
+            //}
+
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
@@ -84,7 +93,7 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
                     response.Data ,
                     response.Validation,
                     Redirect = "/",
-                    Token = Convert.ToBase64String(Encoding.UTF8.GetBytes((response.Data as TokenResponse).Token))
+                    TokenBase64 = Convert.ToBase64String(Encoding.UTF8.GetBytes((response.Data as TokenResponse).Token))
                  });
             }
             if (result.RequiresTwoFactor)
@@ -99,7 +108,7 @@ namespace WebAppMeet.Areas.Identity.Pages.Account
             else
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return Page();
+                return StatusCode(StatusCodes.Status400BadRequest, new { });
             }
             return StatusCode(StatusCodes.Status200OK,new { });
         }

@@ -236,7 +236,7 @@ app.UseEndpoints(endPoints => { endPoints.MapHub<ConnectionHub>("/ConnectionsHub
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
                 var jwtToken = tokenHandler.WriteToken(token);
-                return Results.Ok(Factory.GetResponse<Response<TokenResponse>, TokenResponse>(new TokenResponse { Token = jwtToken, Expiration = expiry }));
+                return Results.Ok(Factory.GetResponse<Response<TokenResponse>, TokenResponse>(new TokenResponse { Token = jwtToken, Expiration = expiry, User = appUser?.UserName}));
 
             }
         }

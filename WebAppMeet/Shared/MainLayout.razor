@@ -12,15 +12,26 @@
     {
         if(firstRender)
         {
+            try
+            {
+                _module = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./js/InterOpLib.js");
+            }
+            catch (Exception)
+            {
+
+            }
             var it =this._httpCtx.HttpContext.Response;
             AuthenticationState authenticationState;
-            var token =await  _localDataStorage.GetTokenAsync();
+            var token = await TryGetToken();
+            await TrySaveJsToken(token);
+            //var tokendata = TryGetTokenData();
             WebAppMeet.Data.Models.TokenResponse tokenObj = null;
 
-            if(!string.IsNullOrEmpty(token))
-            tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
+           // if(!string.IsNullOrEmpty(token))
+            //tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
 
-            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",tokenObj?.Token);
+            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
             string user = authenticationState?.User?.Identity?.Name;
              User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
         }

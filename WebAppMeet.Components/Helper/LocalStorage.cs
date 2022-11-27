@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WebAppMeet.Data.Models;
 
 namespace WebAppMeet.Components.Helper
 {
@@ -17,6 +19,8 @@ namespace WebAppMeet.Components.Helper
         public async Task<string> GetTokenAsync()
         => (await _ProtectedLocalStore.GetAsync<string>("accessToken")).Value;
 
+        public async Task<TokenResponse> GetTokenData()
+         => JsonConvert.DeserializeObject<TokenResponse>((await _ProtectedLocalStore.GetAsync<object>("tokenData")).ToString());
         public async Task SetTokenAsync(string token=null)
         {
            

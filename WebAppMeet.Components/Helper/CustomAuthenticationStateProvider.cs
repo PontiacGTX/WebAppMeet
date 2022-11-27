@@ -86,7 +86,8 @@ namespace WebAppMeet.Components.Helper
 
         private IEnumerable<Claim> ParseJWTClaims(string jwt)
         {
-            var payload = jwt.Split('.')[1];
+            
+            var payload = jwt.Contains('.')? jwt.Split('.')[1]:jwt;
             var jsonBytes = ParseBase64WihoutPadding(payload);
             var kvPairs = JsonSerializer.Deserialize<Dictionary<string, object>>(jsonBytes);
             return (kvPairs ?? new Dictionary<string, object>()).Select(kv => new Claim(kv.Key, kv.Value.ToString()));
@@ -97,10 +98,12 @@ namespace WebAppMeet.Components.Helper
             var x = base64.Length % 4;
             return Convert.FromBase64String((base64.Length % 4) switch
             {
-                0 => "",
+                
                 2 => base64 += "==",
                 3 => base64 += "=",
-               _ => throw new Exception()
+                0=>base64,
+                _=>base64,
+              
            }) ;
         }
     } 

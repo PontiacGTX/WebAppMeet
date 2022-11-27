@@ -44,7 +44,7 @@ namespace WebAppMeet.Components.Components
             }
 
         }
-
+        
         protected async Task ScrollToBottom()
         {
             
