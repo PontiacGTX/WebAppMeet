@@ -21,7 +21,7 @@ namespace WebAppMeet.Hubs
         Task CallEnded(UserMeetings signalingUser, string signal);
         
     }
-    [Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes =JwtBearerDefaults.AuthenticationScheme)]
     public class ConnectionHub:Hub/*<IConnectionHub>*/
     {
         EntityRepository<Meeting> meetingsRepository { get; set; }
@@ -199,14 +199,14 @@ namespace WebAppMeet.Hubs
         }
         public async Task SendMessage(string sender, string receiver, string message)
         {
-            string name = Context.User.Claims.FirstOrDefault(x=>x.Type ==ClaimTypes.NameIdentifier)?.Value;
+            string name = Context.User.Claims.FirstOrDefault(x=>x.Type =="email")?.Value;
             var ctx = this.Clients;
 
-            if (sender != receiver)
+           // if (sender != receiver)
                 await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
-            else
+           // else
             {
-                await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
+             //   await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
                 //await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
             }// this works await Clients.All.SendAsync("ReceiveMessage", receiver, message);
         }
