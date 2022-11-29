@@ -202,13 +202,17 @@ namespace WebAppMeet.Hubs
             string name = Context.User.Claims.FirstOrDefault(x=>x.Type =="email")?.Value;
             var ctx = this.Clients;
 
-           // if (sender != receiver)
-                await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
-           // else
+         // if (sender != receiver)
+             //  await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+         // else
             {
-             //   await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
-                //await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
-            }// this works await Clients.All.SendAsync("ReceiveMessage", receiver, message);
+
+               // await Clients.User(receiver).SendAsync("ReceiveMessage", message);
+                //await Clients.Groups(name).SendAsync("ReceiveMessage", receiver, message);
+                 await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
+                //     await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+            } //this works await
+               // Clients.All.SendAsync("ReceiveMessage", receiver, message);
         }
         //public async Task SendMessage(string username,string message)
         //{

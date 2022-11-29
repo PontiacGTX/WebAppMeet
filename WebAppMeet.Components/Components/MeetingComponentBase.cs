@@ -19,11 +19,12 @@ public class MeetingComponentBase : ComponentBase
 
     [Parameter]
     public int MeetingId { get; set; }
-    protected AuthenticationState _state { get; set; }
     protected string UserId { get; set; }
-    protected ChatBoxComponentBase ChatBox { get; set; }
     [Inject]
-    protected AuthenticationStateProvider _AuthenticationStateProv { get; set; }
+    protected CustomAuthenticationStateProvider _state { get; set; }
+ 
+    protected ChatRoomComponentBase ChatRoom { get; set; }
+    protected AuthenticationState _AuthenticationState { get; set; }
     [Inject]
     protected NavigationManager _NavigationManager { get; set; }
 

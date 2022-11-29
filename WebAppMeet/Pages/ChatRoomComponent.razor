@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@using WebAppMeet.Data.Models
+@inherits ChatRoomComponentBase
+@inject IHttpContextAccessor  httpContextAccesor;
+
+<ChatBoxComponent @ref=ChatBox OnSendMessage="SendMessage">
+
+</ChatBoxComponent>
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                _module = await JS.InvokeAsync<IJSObjectReference>(
+                "import", "./js/InterOpLib.js");
+            }
+            catch (Exception)
+            {
+
+            }
+            _state = await _AuthenticationStateProv.GetAuthenticationStateAsync();
+
+            var token = await base.TryGetToken();
+
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+
+
+        var meetingResponse = await _meetingServices.GetBy(x => x.MeetingId == this.MeetingId);
+        var meeting = meetingResponse.Data as Meeting;
+        int meetingId = meeting.MeetingId;
+        _UserMeetingResponse = await _meetingServices.GetUserMeeting(MeetingId);
+
+        Func<Task> task = (_UserMeetingResponse.StatusCode switch
+        {
+
+            200 => async () =>
+            {
+                _UserMeetings = _UserMeetingResponse.Data as IList<UserMeetings>;
+
+                await Task.CompletedTask;
+            }
+            ,
+            404 => async () =>
+            {
+                await PrintMessage(_UserMeetingResponse.Message, "No Invitees were found,please add new invitees to the meeting");
+
+                await Task.CompletedTask;
+            }
+            ,
+            _ => async () =>
+            {
+                await PrintMessage(_UserMeetingResponse.Message, "An unexpected error happened");
+                await Task.CompletedTask;
+            }
+            ,
+
+        });
+
+        await task.Invoke();
+
+        if (_UserMeetingResponse.StatusCode != 200)
+            return;
+
+
+    }
+}

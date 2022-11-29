@@ -1,30 +1,20 @@
 ﻿@page "/Meeting/{MeetingId:int}"
-@using Microsoft.AspNetCore.SignalR.Client
-@using WebAppMeet.Components.Helper
-@using Newtonsoft.Json
-@using WebAppMeet.Data.Models
-@inherits MeetingComponentBase
+@using Microsoft.AspNetCore.SignalR.Client;
+@using WebAppMeet.Components.Helper;
+@using Newtonsoft.Json;
+@using WebAppMeet.Data.Models;
+@inherits MeetingComponentBase;
 @inject IHttpContextAccessor  httpContextAccesor;
 
-<h3>Meeting Component</h3>
+<ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom >
 
-
-
-
-
-<ChatBoxComponent @ref=ChatBox OnSendMessage="SendMessage" >
-
-</ChatBoxComponent>
-
+</ChatRoomComponent>
 
 @code {
 
-
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             try
             {
@@ -35,105 +25,37 @@
             {
 
             }
-            _state =await _AuthenticationStateProv.GetAuthenticationStateAsync();
 
-            var token =await  TryGetToken();
-            TokenResponse tokenObj = null;
+            var token = await base.TryGetToken();
+            _AuthenticationState = await _state.GetAuthenticationStateAsync("jwt", token);
+            var user = _AuthenticationState.User?.Identity?.Name;
+            ChatRoom.User = this.User = _userManager.Users.FirstOrDefault(x => x.Email.Contains(user));
 
 
 
-            if(hub is null)
+            if (hub is null)
                 hub = new HubConnectionBuilder()
-                    .WithUrl($"https://localhost:7044/ConnectionsHub?access_token={token}"/*_NavigationManager.ToAbsoluteUri($"/ConnectionsHub?access_token={token}")*/, options=>
+                    .WithUrl($"https://localhost:7044/ConnectionsHub?access_token={token}"/*_NavigationManager.ToAbsoluteUri($"/ConnectionsHub?access_token={token}")*/, options =>
                     {
                         options.AccessTokenProvider = () => Task.FromResult(token);
                         options.UseDefaultCredentials = false;
-                        //options.Credentials = 
+                        //options.Credentials =
                         options.Credentials = System.Net.CredentialCache.DefaultCredentials;
                         options.Headers.Add("Authorization", $"Bearer {token}");
                     })
-                    .WithAutomaticReconnect()
+                .WithAutomaticReconnect()
                     .Build();
+            HubOnReceiveMessageDelegate = ChatRoom.OnReceiveMessage;
+            hub.On<string, string>("ReceiveMessage", (name, message) => {
 
-        HubOnReceiveMessageDelegate = OnReceiveMessage;
-        hub.On<string, string>($"ReceiveMessage", HubOnReceiveMessageDelegate);
-        var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
-        var cookie =containsCookies["Application.Identity"];
-
-        //hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
-        await hub.StartAsync();
+                ChatRoom.OnReceiveMessage(name, message); });
+            // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
+            var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
+            var cookie = containsCookies["Application.Identity"];
+            ChatRoom.hub = hub;
+            //hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
+            await hub.StartAsync();
         }
     }
-
-
-    protected override async Task OnInitializedAsync()
-    {
-
-
-
-      
-
-        var meetingResponse =await _meetingServices.GetBy(x => x.MeetingId == this.MeetingId);
-        var meeting =meetingResponse.Data as Meeting;
-        int meetingId = meeting.MeetingId;
-
-        _UserMeetingResponse =await _meetingServices.GetUserMeeting(MeetingId);
-
-        Func<Task> task = (_UserMeetingResponse.StatusCode switch
-        {
-
-            200 => async () => 
-            {
-                _UserMeetings = _UserMeetingResponse.Data as IList<UserMeetings>;
-
-                await Task.CompletedTask;
-            },
-            404 =>async () => 
-            { 
-                await PrintMessage(_UserMeetingResponse.Message, "No Invitees were found,please add new invitees to the meeting");
-
-                await Task.CompletedTask;
-            },
-            _=>async () => 
-            { 
-                await PrintMessage(_UserMeetingResponse.Message, "An unexpected error happened");
-                await Task.CompletedTask;
-            },
-
-        });
-
-        await task.Invoke();
-
-        if (_UserMeetingResponse.StatusCode != 200)
-            return;
-
-       
-    }
-    public async void OnReceiveMessage(string sender,string message)
-    {
-        var encodedMsg = $"{sender}: {message}";
-        ChatBox.MessageList.Add(encodedMsg);
-        await ChatBox.ComponentStateHasChanged();
-
-    }
-    private async Task SendMessage(string message)
-    {
-        if(string.IsNullOrEmpty(message))
-        {
-            await PrintMessage("Error", "Cannot send an empty message");
-            return;
-        }
-        if (hub is not null)
-        {
-
-            foreach (var user in _UserMeetings)
-            {
-                await hub.SendAsync("SendMessage", User.Email, user.User.Email,ChatBox.Message);
-            }
-
-          // await  ChatBox.ComponentStateHasChanged();
-        }
-    }
-
 
 }
