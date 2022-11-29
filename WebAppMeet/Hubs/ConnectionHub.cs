@@ -209,8 +209,9 @@ namespace WebAppMeet.Hubs
 
                // await Clients.User(receiver).SendAsync("ReceiveMessage", message);
                 //await Clients.Groups(name).SendAsync("ReceiveMessage", receiver, message);
-                 await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
-                //     await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
+                 //await this.Clients.Client(receiver).SendAsync("ReceiveMessage", sender, message);
+                 if(sender!=receiver)
+                    await Clients.Users(sender, receiver).SendAsync("ReceiveMessage", sender, message);
             } //this works await
                // Clients.All.SendAsync("ReceiveMessage", receiver, message);
         }
