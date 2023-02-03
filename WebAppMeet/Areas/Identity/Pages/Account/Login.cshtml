@@ -129,12 +129,17 @@
                       });
 
                let json =await response.json();
+                if (json.statusCode!=200){
+                    alert(json.message)
+                    return;
+                }
                 console.log(json.tokenBase64)
                 if (json.tokenBase64!=undefined)
                 window.localStorage.setItem('accessToken.js', json.tokenBase64);
 
                 
                 window.localStorage.setItem('tokenData.js', JSON.stringify(json.data));
+                console.log('redirect '+ json.redirect)
                 window.location.href = json.redirect;
                 //let response =  fetch(, {
                 //method: "post",

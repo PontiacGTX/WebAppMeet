@@ -5,21 +5,45 @@
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
 
-Welcome to your new app.
+Welcome <a href="#" onclick="@RedirectMeetings">Create a meeting</a>
 
 <SurveyPrompt Title="How is Blazor working for you?" />
 
 
 @code{
 
+    AuthenticationState authenticationState { get; set; }
+    [Inject]
+    UserManager<AppUser> _userManager { get; set; }
+    string userName { get; set; }
 
-    
+    [Inject]
+    WebAppMeet.Components.Helper.
+    LocalStorage _localDataStorage  { get; set; }
 
+    [Inject]
+    WebAppMeet.Components.Helper.CustomAuthenticationStateProvider _AuthenticationStateProv{ get; set; }
+
+    [Inject]
+    NavigationManager _NavManager { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        
-        
+
+
     }
-};
+
+
+    protected async void RedirectMeetings()
+    {
+        string user = authenticationState?.User?.Identity?.Name;
+        if (string.IsNullOrEmpty(user))
+        {
+            var token =  await _localDataStorage.GetTokenAsync();
+            authenticationState = await  _AuthenticationStateProv.GetAuthenticationStateAsync("jwt", token);
+            user = authenticationState?.User?.Identity?.Name;
+        }
+        AppUser User = (_userManager.Users.FirstOrDefault(x => x.Email == user));
+        _NavManager.NavigateTo($"/ChatList/{(User?.Id ?? "0")}");
+    }
+}
