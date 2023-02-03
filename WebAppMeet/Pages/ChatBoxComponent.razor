@@ -6,7 +6,21 @@
         
             @if(!MessageList.Any())
             {
-                <span>No messages</span>
+                
+                 var text = string.Join("\n", MessageList);
+                <div style="float: left; width: 80%;">
+                    <textarea @ref=TextAreaRef disabled style="width:100%; max-width: 100%;height:236px">@text  </textarea>
+                 
+                   <div class="row">
+                        <div class="col col-lg-11">
+                               <textarea style="height:200px;resize: none;width:96%;" @bind=Message @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
+
+                         </div>  
+                        <div class="col-1">
+                    <a class="btn btn-success" style="bottom:-77%;position:relative;left:-90%;border-radius:40%;width:260%;" @onclick="OnButtonSend">Send</a>
+                        </div>
+                    </div>
+                </div>
             }
             else
             {
@@ -14,22 +28,26 @@
 
                 <div style="float: left; width: 80%;">
                         <textarea @ref=TextAreaRef  disabled  style="width:100%; max-width: 100%;height:236px"  >@text  </textarea>
+                    <div class="row">
+                        <div class="col col-lg-11">
+                               <textarea style="height:200px;resize: none;width:96%;" @bind=Message @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
+
+                         </div>  
+                        <div class="col-1">
+                    <a class="btn btn-success" style="bottom:-77%;position:relative;left:-90%;border-radius:40%;max-width:260%;" @onclick="OnButtonSend">Send</a>
+                        </div>
+                    </div>
                 </div>
             }
         
     <section class="container" >
          <div class="row">
     
-    <div class="col-sm">
-        <div class="row">
-             <textarea style="height:236px;resize: none;" @bind=Message  @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
+        
+           
         </div>
-    </div>
-  </div>
        
-        <div>
-            <a class="btn btn-success"  @onclick="OnButtonSend" >Send</a>
-        </div>
+        
     </section>
 </div>
 

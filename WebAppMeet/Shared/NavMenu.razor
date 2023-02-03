@@ -50,7 +50,7 @@
                <li id="ullink"> <a href="#">Contact  </a> </li>
                <li id="icon"    @onmouseover="MakeMenuVisible"  >
                    <i class="fas fa-bars"></i>
-                   <ul id="accountMenu" style="@displaymenu" >
+                   <ul id="accountMenu" style="@displaymenu"  @onmouseout="MakeMenuInvisible" >
                        <CascadingAuthenticationState>
                            <AuthorizeView>
                                <Authorized>
@@ -101,10 +101,16 @@
         isMouseOutMenu = false;
 
     }
+    private void MakeMenuInvisible(MouseEventArgs e)
+    {
+        displaymenu = "display:none";
+        isMouseOutMenu = true;
+    }
 
     private void MakeMenuNonVisible(MouseEventArgs e)
     {
         displaymenu = "display:none;";
+        isMouseOutMenu = true;
 
     }
 }
