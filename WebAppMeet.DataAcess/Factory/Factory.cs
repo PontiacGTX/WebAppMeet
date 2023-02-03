@@ -30,7 +30,8 @@ namespace WebAppMeet.DataAcess.Factory
                 if (messages.FirstOrDefault() == null)
                     return new ErrorServerResponse<T> { Data = default, Message = Factory.GetStringResponse(StringResponseEnum.InternalServerError), StatusCode = statusCode, Success = success };
 
-                return new ErrorServerResponse<T> { Data = default, Message = messages.FirstOrDefault(), StatusCode = 500, Success = success, Validation = messages[1..(messages.Length-1)] };
+                var obj = new ErrorServerResponse<T> { Data = default, Message = messages.FirstOrDefault(), StatusCode = statusCode!=200?statusCode:500, Success = success, Validation = messages };
+                return obj;
             }
                 return default;
         }

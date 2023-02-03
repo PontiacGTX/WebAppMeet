@@ -51,7 +51,7 @@
     {
 
         var response = await _authService.GetJWTToken(new Data.Models.UserTokenRequest { Password = LoginModel.Password, UserName = LoginModel.Email });
-        if (response.StatusCode != 200)
+        if (response.Data ==null)
         {
             await PrintMessage("Error", response.Message);
             return;

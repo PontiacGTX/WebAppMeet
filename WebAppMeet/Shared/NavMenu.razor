@@ -19,6 +19,7 @@
     protected AppUser User{ get; set; }
     protected override async Task OnInitializedAsync()
     {
+        authenticationState = await auth.GetAuthenticationStateAsync();
         path = $"/ChatList";
     }
 
@@ -26,13 +27,16 @@
     {
         if(firstRender)
         {
-
+            var token = await _localDataStorage.GetTokenAsync();
+            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt", token);
             path = $"/ChatList/{(User?.Id??"0")}";
         }
     }
+
+ 
     protected async Task RedirectToUrl()
     {
-        AuthenticationState authenticationState;
+        
         var token =await  _localDataStorage.GetTokenAsync();
         authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
         string user = authenticationState?.User?.Identity?.Name;
@@ -55,13 +59,15 @@
                            <AuthorizeView>
                                <Authorized>
                                    <li class="listItemLogin"><NavLink href="/Profile">Profile</NavLink></li> 
-                                   <li class="listItemLogin io io-lock-locked"><NavLink href="/identity/account/Logout">Logout</NavLink></li> 
+                                   <li class="listItemLogin io io-lock-locked"><NavLink href="#">Logout</NavLink></li> 
                                </Authorized>
                      
                               <NotAuthorized>
-                               <li class="listItemLogin io io-lock-locked"><NavLink href="/Login">Login</NavLink></li>
-                               <li class="listItemLogin"><NavLink href="/Register">Signup</NavLink></li> 
-                               </NotAuthorized>
+                            <li class="listItemLogin io io-lock-locked">
+                                <NavLink @onclick="(e)=>RedirectLogin(e)" href="@urlLi1LinkPath">Login</NavLink>
+                            </li>
+                            <li class="listItemLogin"><NavLink @onclick="(e)=> RedirectRegistration(e)" href="/Identity/Account/Register">Signup</NavLink></li>
+                        </NotAuthorized>
                           </AuthorizeView>
                       </CascadingAuthenticationState>
                    </ul>
@@ -95,6 +101,10 @@
     private string displaymenu { get; set; } = "display:none;";
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
     private bool isMouseOutMenu = true;
+    string urlLi1LinkPath { get; set; } = "/Identity/Account/Login";
+
+    [CascadingParameter]
+    AuthenticationState authenticationState { get; set; }
     private void MakeMenuVisible(MouseEventArgs e)
     {
         displaymenu = "display:flex;";
@@ -111,6 +121,20 @@
     {
         displaymenu = "display:none;";
         isMouseOutMenu = true;
+
+    }
+    private void RedirectRegistration(MouseEventArgs e)
+    {
+        
+        displaymenu = "display:none";
+        isMouseOutMenu = true;
+        _NavManager.NavigateTo("/Identity/Account/Register");
+    }
+    private void RedirectLogin(MouseEventArgs e)
+    {
+        displaymenu = "display:none";
+        isMouseOutMenu = true;
+        _NavManager.NavigateTo("Identity/Account/Login");
 
     }
 }

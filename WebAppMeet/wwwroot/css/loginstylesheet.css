@@ -1,10 +1,20 @@
 ﻿#accountMenu {
-    background: black;
+    background: #34495e !important;
     flex-direction: column;
     position: relative;
     margin-top: 5%;
     width: min-content;
     border-radius: 0 20px 20px 20px;
+}
+
+#accountMenuInactive {
+    background: rgb(80, 00, 167);
+    flex-direction: column;
+    position: relative;
+    margin-top: 5%;
+    width: min-content;
+    border-radius: 0 20px 20px 20px;
+    display:none;
 }
 
 #ulist {

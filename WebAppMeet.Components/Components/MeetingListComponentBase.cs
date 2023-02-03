@@ -39,8 +39,13 @@ namespace WebAppMeet.Components.Components
         protected IList<Meeting> meetings { get; set; }
         protected Response<IList<Meeting>> MeetingsResponse { get; set; }
 
-        protected async Task OnButtonClick(string url,int meetingId)
+        protected async Task OnButtonClick(string url,int meetingId,DateTime date)
         {
+            if (date<DateTime.Now.Date)
+            {
+                await PrintMessage("Invalid meeting", "Meeting's expired");
+                return;
+            }
             if (!string.IsNullOrEmpty(url))
                 _NavigationManager.NavigateTo(url);
             else

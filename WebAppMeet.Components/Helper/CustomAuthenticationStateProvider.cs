@@ -45,7 +45,7 @@ namespace WebAppMeet.Components.Helper
             }
             else
             {
-                identity = new ClaimsIdentity(new List<Claim>(), _authType);
+                identity = new ClaimsIdentity(/*new List<Claim>(), _authType*/);
                 user = new ClaimsPrincipal(identity);
                 state = new AuthenticationState(user);
 

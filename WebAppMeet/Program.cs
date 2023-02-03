@@ -329,7 +329,7 @@ app.UseEndpoints(endPoints => {
 
             }
         }
-        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<Response<TokenResponse>, TokenResponse>(null, 401,false,Factory.GetStringResponse(StringResponseEnum.Unathorized))));
+        return Results.Ok((StatusCodes.Status401Unauthorized, Factory.GetResponse<ErrorServerResponse<TokenResponse>, TokenResponse>(null, 401,false,Factory.GetStringResponse(StringResponseEnum.Unathorized))));
     });
 
     app.MapGet("/Security/Token/Validate=access_token={token}",

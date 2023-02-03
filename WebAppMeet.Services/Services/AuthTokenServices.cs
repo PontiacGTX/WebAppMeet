@@ -26,7 +26,8 @@ namespace WebAppMeet.Services.Services
         {
             var url = Url($"{await GetBaseUrl()}/Security/Token/Create");
             var response = await _httpClient.PostAsync(url, GetContent(request));
-            return GetResponse<TokenResponse>(await response.Content.ReadAsStringAsync());
+            var str = await response.Content.ReadAsStringAsync();
+            return GetResponse<TokenResponse>(str);
         }
        async Task<string> GetBaseUrl()
        {
