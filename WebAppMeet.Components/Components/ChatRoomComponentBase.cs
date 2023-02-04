@@ -50,7 +50,7 @@ namespace WebAppMeet.Components.Components
         
         public async void OnReceiveMessage(string sender, string message)
         {
-            var encodedMsg = $"{sender}: {message}";
+            var encodedMsg = $"{sender} {DateTime.Now.ToString()}: {message}";
             ChatBox.MessageList.Add(encodedMsg);
             await ChatBox.ComponentStateHasChanged();
 

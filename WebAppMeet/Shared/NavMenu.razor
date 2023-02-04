@@ -25,8 +25,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        
+        if (firstRender)
         {
+            
             var token = await _localDataStorage.GetTokenAsync();
             authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt", token);
             path = $"/ChatList/{(User?.Id??"0")}";
@@ -64,9 +66,9 @@
                      
                               <NotAuthorized>
                             <li class="listItemLogin io io-lock-locked">
-                                <NavLink @onclick="(e)=>RedirectLogin(e)" href="@urlLi1LinkPath">Login</NavLink>
+                                <NavLink @onclick="(e)=>RedirectLogin(e)" href="@urlLi1LinkPath">@actionText</NavLink>
                             </li>
-                            <li class="listItemLogin"><NavLink @onclick="(e)=> RedirectRegistration(e)" href="/Identity/Account/Register">Signup</NavLink></li>
+                            <li class="listItemLogin"><NavLink @onclick="(e)=> RedirectRegistration(e)" href="@urlL2LinkPath">@actionText1</NavLink></li>
                         </NotAuthorized>
                           </AuthorizeView>
                       </CascadingAuthenticationState>
@@ -102,13 +104,32 @@
     private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
     private bool isMouseOutMenu = true;
     string urlLi1LinkPath { get; set; } = "/Identity/Account/Login";
+    string urlL2LinkPath { get; set; } = "/Identity/Account/Register";
+    string actionText { get; set; }
+    string actionText1 { get; set; }
 
     [CascadingParameter]
     AuthenticationState authenticationState { get; set; }
-    private void MakeMenuVisible(MouseEventArgs e)
+    private async void MakeMenuVisible(MouseEventArgs e)
     {
         displaymenu = "display:flex;";
         isMouseOutMenu = false;
+
+        var token = await _localDataStorage.GetTokenAsync();
+        if (!string.IsNullOrEmpty(token))
+        {
+            authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt", token);
+            var name = authenticationState?.User?.Identity?.Name;
+
+            if(User==null)
+                User = _userManager.Users.FirstOrDefault(x => x.Email == name);
+
+            urlLi1LinkPath = User == null ?  "/Identity/Account/Login" : $"/ChatList/{(User?.Id ?? "0")}";
+            actionText = User == null ? "Login" : "Chat list";
+
+            urlL2LinkPath = User == null ? "/Identity/Account/Register" : "Identity/Account/Logout"; 
+            actionText1 = User == null ? "Register" : "Logout";
+        }
 
     }
     private void MakeMenuInvisible(MouseEventArgs e)

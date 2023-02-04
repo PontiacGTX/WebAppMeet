@@ -10,8 +10,10 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        Console.WriteLine("Main non First");
         if(firstRender)
         {
+            Console.WriteLine("Main  First");
             try
             {
                 _module = await JS.InvokeAsync<IJSObjectReference>(
@@ -28,12 +30,39 @@
             //var tokendata = TryGetTokenData();
             WebAppMeet.Data.Models.TokenResponse tokenObj = null;
 
-           // if(!string.IsNullOrEmpty(token))
+            // if(!string.IsNullOrEmpty(token))
             //tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
 
             authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt",token);
             string user = authenticationState?.User?.Identity?.Name;
-             User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
+            User = ( _userManager.Users.FirstOrDefault(x => x.Email == user));
+        }
+        else
+        {
+            if(User is null)
+            {
+                try
+                {
+                    _module = await JS.InvokeAsync<IJSObjectReference>(
+                    "import", "./js/InterOpLib.js");
+                }
+                catch (Exception)
+                {
+                }
+                var it = this._httpCtx.HttpContext.Response;
+                AuthenticationState authenticationState;
+                var token = await TryGetToken();
+                await TrySaveJsToken(token);
+                //var tokendata = TryGetTokenData();
+                WebAppMeet.Data.Models.TokenResponse tokenObj = null;
+
+                // if(!string.IsNullOrEmpty(token))
+                //tokenObj =Newtonsoft.Json.JsonConvert.DeserializeObject<WebAppMeet.Data.Models.TokenResponse>(token);
+
+                authenticationState = await _AuthenticationStateProv.GetAuthenticationStateAsync("jwt", token);
+                string user = authenticationState?.User?.Identity?.Name;
+                User = (_userManager.Users.FirstOrDefault(x => x.Email == user));
+            }
         }
     }
 }
