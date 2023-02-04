@@ -96,8 +96,8 @@
                 {
                     await hub.SendAsync("JoinRoom",MeetingId, User.Id, ChatRoom?.User.UserName);
                     
-                }
                 await hub.SendAsync("GetCurrentUsers", MeetingId);
+                }
             }
         }
     }
