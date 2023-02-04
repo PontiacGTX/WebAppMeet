@@ -5,7 +5,7 @@
 @using WebAppMeet.Data.Models;
 @inherits MeetingComponentBase;
 @inject IHttpContextAccessor  httpContextAccesor;
-
+@implements IDisposable
 <MeetingAttendantsComponent @ref="_MeetingAttentandantsComponentBase" />
 <ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom >
 
@@ -60,6 +60,15 @@
                 }
             });
 
+            hub.On<string>("LeavingRoom", (id) =>
+            {
+                if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
+                {
+                    _MeetingAttentandantsComponentBase.Attendants.Remove(id);
+                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                }
+            });
+
             // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
             var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
             var cookie = containsCookies["Application.Identity"];
@@ -71,12 +80,22 @@
         {
             if (ChatRoom?.User != null)
             {
-                var usr = _userManager.Users.First(x => x.UserName == ChatRoom.User.UserName);
-                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(usr?.Id))
+                this.User  = _userManager.Users.First(x => x.UserName == ChatRoom.User.UserName);
+                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(User?.Id))
                 {
-                    await hub.SendAsync("JoinRoom", usr.Id, ChatRoom?.User.UserName);
+                    await hub.SendAsync("JoinRoom", User.Id, ChatRoom?.User.UserName);
                 }
             }
+        }
+    }
+
+    public void Dispose()
+    {
+        if (User !=null && _MeetingAttentandantsComponentBase.Attendants.ContainsKey
+         (User?.Id))
+        {
+            this.
+            hub.SendAsync("LeaveRooom", User.Id).GetAwaiter().GetResult();
         }
     }
 

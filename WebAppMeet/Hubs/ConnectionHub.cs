@@ -201,6 +201,10 @@ namespace WebAppMeet.Hubs
         public async Task JoinRoom(string id,string user)
         {
             await Clients.All.SendAsync("JoinedRoom",id, user);
+        } 
+        public async Task LeaveRooom(string id)
+        {
+            await Clients.All.SendAsync("LeavingRooom", id);
         }
         public async Task SendMessage(string sender, string receiver, string message)
         {
