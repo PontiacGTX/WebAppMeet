@@ -22,7 +22,7 @@ public class MeetingComponentBase : ComponentBase
     protected string UserId { get; set; }
     [Inject]
     protected CustomAuthenticationStateProvider _state { get; set; }
- 
+    protected MeetingAttentandantsComponentBase _MeetingAttentandantsComponentBase { get; set; }
     protected ChatRoomComponentBase ChatRoom { get; set; }
     protected AuthenticationState _AuthenticationState { get; set; }
     [Inject]

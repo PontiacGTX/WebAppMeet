@@ -1,0 +1,18 @@
+﻿@inherits MeetingAttentandantsComponentBase
+
+<h3>Now Online</h3>
+<ul>
+    @if(!this.Attendants.Any())
+    {
+        <li>Error Signalr not working</li>
+    }
+    else
+    {
+        
+        @foreach(var attendant in Attendants)
+        {
+            <li>@attendant.Value</li>
+        }
+    }
+
+</ul>

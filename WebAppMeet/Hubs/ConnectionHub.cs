@@ -197,6 +197,11 @@ namespace WebAppMeet.Hubs
 
             await base.OnConnectedAsync();
         }
+
+        public async Task JoinRoom(string id,string user)
+        {
+            await Clients.All.SendAsync("JoinedRoom",id, user);
+        }
         public async Task SendMessage(string sender, string receiver, string message)
         {
             string name = Context.User.Claims.FirstOrDefault(x=>x.Type =="email")?.Value;
@@ -215,6 +220,8 @@ namespace WebAppMeet.Hubs
             } //this works await
                // Clients.All.SendAsync("ReceiveMessage", receiver, message);
         }
+
+
         //public async Task SendMessage(string username,string message)
         //{
         //   await Clients.User(username).SendAsync("ReceiveMessage", message);

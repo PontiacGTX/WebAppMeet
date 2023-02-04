@@ -6,6 +6,7 @@
 @inherits MeetingComponentBase;
 @inject IHttpContextAccessor  httpContextAccesor;
 
+<MeetingAttendantsComponent @ref="_MeetingAttentandantsComponentBase" />
 <ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom >
 
 </ChatRoomComponent>
@@ -49,12 +50,33 @@
             hub.On<string, string>("ReceiveMessage", (name, message) => {
 
                 ChatRoom.OnReceiveMessage(name, message); });
+
+            hub.On<string,string>("JoinedRoom", (id,name) =>
+            {
+                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
+                {
+                    _MeetingAttentandantsComponentBase.Attendants.Add(id, name);
+                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                }
+            });
+
             // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
             var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
             var cookie = containsCookies["Application.Identity"];
             ChatRoom.hub = hub;
             //hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
             await hub.StartAsync();
+        }
+        else
+        {
+            if (ChatRoom?.User != null)
+            {
+                var usr = _userManager.Users.First(x => x.UserName == ChatRoom.User.UserName);
+                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(usr?.Id))
+                {
+                    await hub.SendAsync("JoinRoom", usr.Id, ChatRoom?.User.UserName);
+                }
+            }
         }
     }
 
