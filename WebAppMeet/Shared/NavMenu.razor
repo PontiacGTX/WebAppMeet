@@ -68,7 +68,7 @@
                             <li class="listItemLogin io io-lock-locked">
                                 <NavLink @onclick="(e)=>RedirectLogin(e)" href="@urlLi1LinkPath">@actionText</NavLink>
                             </li>
-                            <li class="listItemLogin"><NavLink @onclick="(e)=> RedirectRegistration(e)" href="@urlL2LinkPath">@actionText1</NavLink></li>
+                            <li class="listItemLogin"><NavLink id="logoutLink" @onclick="(e)=> RedirectRegistration(e)" href="@urlL2LinkPath">@actionText1</NavLink></li>
                         </NotAuthorized>
                           </AuthorizeView>
                       </CascadingAuthenticationState>
@@ -76,6 +76,7 @@
                </li>
             </ul>
 </nav>
+
 @*<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <nav class="flex-column">
         <div class="nav-item px-3">
