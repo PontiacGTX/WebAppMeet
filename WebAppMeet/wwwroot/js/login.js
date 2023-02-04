@@ -1,6 +1,6 @@
 ﻿async function loginUser() {
 
-    alert("fuck");
+  
 
     let datos = {
         'Email': document.getElementById('Input_Email').value,

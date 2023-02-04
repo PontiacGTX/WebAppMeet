@@ -22,17 +22,22 @@
 
 
 <script>
-(() => 
-{
-        if (localStorage.getItem('accessToken') !== null)
-    localStorage.removeItem("accessToken");
-        if (localStorage.getItem('tokenData.js') !== null)
-    localStorage.removeItem("tokenData.js");
+    document.onload = (e) =>
+    {
+      console.log('deleting')
 
-    console.log('@Url.Page("/", new { area = "" })"')
-    document.getElementById("logoutForm").submit(); 
+    };
+//(() => 
+//{
+//            localStorage.removeItem("accessToken");
+       
+//             localStorage.removeItem("tokenData.js");
+        
+
+//    console.log('@Url.Page("/", new { area = "" })"')
+//    document.getElementById("logoutForm").submit(); 
     
     
-})()
+//})()
 
 </script>
