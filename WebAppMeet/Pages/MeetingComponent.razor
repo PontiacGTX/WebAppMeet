@@ -47,11 +47,13 @@
                 .WithAutomaticReconnect()
                     .Build();
             HubOnReceiveMessageDelegate = ChatRoom.OnReceiveMessage;
-            hub.On<string, string>("ReceiveMessage", (name, message) => {
+            hub.On<string, string>("ReceiveMessage", ( name, message) => 
+            {
 
-                ChatRoom.OnReceiveMessage(name, message); });
+                ChatRoom.OnReceiveMessage(name, message); 
+            });
 
-            hub.On<string,string>("JoinedRoom", (id,name) =>
+            hub.On<int, string,string>("JoinedRoom", (roomid, id,name) =>
             {
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
@@ -60,7 +62,15 @@
                 }
             });
 
-            hub.On<string>("LeavingRoom", (id) =>
+            hub.On<string, string>("JoinedUsers", (userId, email) =>
+            {
+                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(userId))
+                {
+                    _MeetingAttentandantsComponentBase.Attendants.Add(userId, email.ToLower());
+                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                }
+            });
+            hub.On<int,string>("LeavingRoom", (roomid,id) =>
             {
                 if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
@@ -69,6 +79,7 @@
                 }
             });
 
+           
             // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
             var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
             var cookie = containsCookies["Application.Identity"];
@@ -83,8 +94,10 @@
                 this.User  = _userManager.Users.First(x => x.UserName == ChatRoom.User.UserName);
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(User?.Id))
                 {
-                    await hub.SendAsync("JoinRoom", User.Id, ChatRoom?.User.UserName);
+                    await hub.SendAsync("JoinRoom",MeetingId, User.Id, ChatRoom?.User.UserName);
+                    
                 }
+                await hub.SendAsync("GetCurrentUsers", MeetingId);
             }
         }
     }
@@ -95,7 +108,7 @@
          (User?.Id))
         {
             this.
-            hub.SendAsync("LeaveRooom", User.Id).GetAwaiter().GetResult();
+            hub.SendAsync("LeaveRooom", MeetingId, User.Id).GetAwaiter().GetResult();
         }
     }
 

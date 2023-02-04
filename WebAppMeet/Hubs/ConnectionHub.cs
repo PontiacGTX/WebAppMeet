@@ -198,13 +198,33 @@ namespace WebAppMeet.Hubs
             await base.OnConnectedAsync();
         }
 
-        public async Task JoinRoom(string id,string user)
+        public async Task GetCurrentUsers(int meetingId)
         {
-            await Clients.All.SendAsync("JoinedRoom",id, user);
+            foreach (var user in await userMeetingsRepository.GetAll(
+                include:(IQueryable<UserMeetings> inc)=>inc.Include(x=>x.User),
+                whereClause: x => x.MeetingId == meetingId && x.IsActive,
+                selector:Select=>Select.User))
+                await Clients.Caller.SendAsync("JoinedUsers",user.Id,user.NormalizedEmail);
+        }
+        public async Task JoinRoom(int MeetingId, string id,string user)
+        {
+            var meeting = await userMeetingsRepository.FirstOrDefault(x => x.MeetingId == MeetingId && x.UserId == id);
+            if (meeting != null)
+            {
+                meeting.IsActive = true;
+                await userMeetingsRepository.SaveChanges();
+            }
+            await Clients.All.SendAsync("JoinedRoom", MeetingId, id, user);
         } 
-        public async Task LeaveRooom(string id)
+        public async Task LeaveRooom(int MeetingId, string id)
         {
-            await Clients.All.SendAsync("LeavingRooom", id);
+            var meeting = await userMeetingsRepository.FirstOrDefault(x => x.MeetingId == MeetingId && x.UserId == id);
+            if (meeting != null)
+            {
+                meeting.IsActive = false;
+               await userMeetingsRepository.SaveChanges(); 
+            }
+            await Clients.All.SendAsync("LeavingRooom", MeetingId, id);
         }
         public async Task SendMessage(string sender, string receiver, string message)
         {
