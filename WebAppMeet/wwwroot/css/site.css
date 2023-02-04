@@ -190,3 +190,14 @@ a, .btn-link {
     }
 }
 
+.stickLeftSideUserList {
+    display: inline-block;
+    position: sticky;
+    left: 0;
+    height: 100%;
+}
+.chatbox {
+    display: inline;
+    position: sticky;
+    margin-left: 24% !important;
+}
