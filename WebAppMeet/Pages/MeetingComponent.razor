@@ -92,7 +92,7 @@
             if (ChatRoom?.User != null)
             {
                 this.User  = _userManager.Users.First(x => x.UserName == ChatRoom.User.UserName);
-                if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(User?.Id))
+                if ( !_MeetingAttentandantsComponentBase.Attendants.ContainsKey(User?.Id))
                 {
                     await hub.SendAsync("JoinRoom",MeetingId, User.Id, ChatRoom?.User.UserName);
                     

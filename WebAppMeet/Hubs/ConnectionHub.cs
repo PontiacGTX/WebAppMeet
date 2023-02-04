@@ -224,7 +224,7 @@ namespace WebAppMeet.Hubs
                 meeting.IsActive = false;
                await userMeetingsRepository.SaveChanges(); 
             }
-            await Clients.All.SendAsync("LeavingRooom", MeetingId, id);
+            await Clients.All.SendAsync("LeavingRoom", MeetingId, id);
         }
         public async Task SendMessage(string sender, string receiver, string message)
         {

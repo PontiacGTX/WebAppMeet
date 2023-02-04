@@ -105,8 +105,8 @@
     private bool isMouseOutMenu = true;
     string urlLi1LinkPath { get; set; } = "/Identity/Account/Login";
     string urlL2LinkPath { get; set; } = "/Identity/Account/Register";
-    string actionText { get; set; }
-    string actionText1 { get; set; }
+    string actionText { get; set; } = "Login";
+    string actionText1 { get; set; } = "Register";
 
     [CascadingParameter]
     AuthenticationState authenticationState { get; set; }
