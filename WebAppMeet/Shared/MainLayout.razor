@@ -23,7 +23,7 @@
             {
 
             }
-            var it =this._httpCtx.HttpContext.Response;
+            //var it =this._httpCtx.HttpContext.Response;
             AuthenticationState authenticationState;
             var token = await TryGetToken();
             await TrySaveJsToken(token);
@@ -49,7 +49,7 @@
                 catch (Exception)
                 {
                 }
-                var it = this._httpCtx.HttpContext.Response;
+                //var it = this._httpCtx.HttpContext.Response;
                 AuthenticationState authenticationState;
                 var token = await TryGetToken();
                 await TrySaveJsToken(token);

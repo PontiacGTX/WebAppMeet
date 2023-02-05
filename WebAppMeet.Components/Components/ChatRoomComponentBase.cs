@@ -27,6 +27,8 @@ namespace WebAppMeet.Components.Components
         protected AuthenticationState _state { get; set; }
         protected IJSObjectReference _module;
         [Parameter]
+        public EventCallback<string> OnChatboxUserTyping { get; set; }
+        [Parameter]
         public int MeetingId { get; set; }
         [Inject]
         protected AuthenticationStateProvider _AuthenticationStateProv { get; set; }
@@ -45,7 +47,7 @@ namespace WebAppMeet.Components.Components
         [CascadingParameter]
         public AppUser User { get; set; }
         protected IList<UserMeetings> _UserMeetings { get; set; }
-        protected ChatBoxComponentBase ChatBox { get; set; }
+        public ChatBoxComponentBase ChatBox { get; set; }
 
         
         public async void OnReceiveMessage(string sender, string message)
@@ -96,6 +98,10 @@ namespace WebAppMeet.Components.Components
 
                 throw;
             }
+        }
+        protected async Task OnUserTyping(string message)
+        {
+           await OnChatboxUserTyping.InvokeAsync(message);
         }
         protected async Task SendMessage(string message)
         {

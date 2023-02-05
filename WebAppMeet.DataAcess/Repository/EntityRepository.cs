@@ -164,16 +164,7 @@ namespace WebAppMeet.DataAcess.Repository
                         .Include(secondIncludeclause)
                         .Where(selector)
                         .ToListAsync();
-        public async Task<IList<T>> GetAll<TId, TInclude, TIncludeSecond, TIncludeThird>(Expression<Func<T, TInclude>> includeclause, Expression<Func<T, TIncludeSecond>> secondIncludeclause, Expression<Func<T, TIncludeThird>> thirdIncludeclause,Expression<Func<T, bool>> selector)
-           where TInclude :       class, new()
-           where TIncludeSecond : class, new()
-           where TIncludeThird :  class, new()
-            =>  await _ctx.Set<T>()
-                        .Include(includeclause)
-                        .Include(secondIncludeclause)
-                        .Include(thirdIncludeclause)
-                        .Where(selector)
-                        .ToListAsync();
+    
 
 
         public async Task<bool> Delete<TId>(TId id)

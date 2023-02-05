@@ -12,8 +12,8 @@ namespace WebAppMeet.Components.Components
     public class ChatBoxComponentBase : ComponentBase
     {
         protected ElementReference TextAreaRef;
-
-
+        
+        public UserActivityIndicatorComponentBase UserActivityIndicatorComponent { get; set; }
         [Inject]
         protected IJSRuntime JS { get; set; }
 
@@ -23,6 +23,8 @@ namespace WebAppMeet.Components.Components
         public string HubId { get; set; }
         [Parameter]
         public EventCallback<string> OnSendMessage { get; set; }
+        [Parameter]
+        public EventCallback<string> OnUserTyping { get; set; }
         protected override async Task OnInitializedAsync()
         {
             if (MessageList == null)
@@ -54,9 +56,19 @@ namespace WebAppMeet.Components.Components
         protected async Task OnButtonSend(MouseEventArgs e)
         {
             await SendAndClear();
+            await OnUserTyping.InvokeAsync("Enter");
         }
         protected async Task OnKeyPressed(KeyboardEventArgs e)
         {
+            if(!string.IsNullOrEmpty(Message) && e.Key!="Backspace")
+            {
+               await OnUserTyping.InvokeAsync(e.Key);
+            }
+            else if(string.IsNullOrEmpty(Message) && e.Key == "Backspace")
+            {
+               await OnUserTyping.InvokeAsync("Enter");
+
+            }
             if (e.Key == "Enter")
             {
                 await SendAndClear();

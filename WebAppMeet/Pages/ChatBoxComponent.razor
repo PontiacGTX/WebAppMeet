@@ -1,9 +1,16 @@
-﻿@inherits ChatBoxComponentBase
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@inherits ChatBoxComponentBase
+@code {
+
+    
+
+    
+}
 
 <div class="container chatbox" style="margin-top:10%;">
     
+        <div>
         <h4>Chat</h4>
-        
             @if(!MessageList.Any())
             {
                 
@@ -21,6 +28,7 @@
                         </div>
                     </div>
                 </div>
+                <UserActivityIndicatorComponent @ref="this.UserActivityIndicatorComponent"></UserActivityIndicatorComponent>
             }
             else
             {
@@ -38,7 +46,10 @@
                         </div>
                     </div>
                 </div>
+                <UserActivityIndicatorComponent @ref="this.UserActivityIndicatorComponent"></UserActivityIndicatorComponent>
             }
+
+        </div>
         
     <section class="container" >
          <div class="row">
@@ -50,7 +61,3 @@
         
     </section>
 </div>
-
-@code {
-
-}

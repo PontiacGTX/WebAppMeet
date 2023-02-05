@@ -216,6 +216,11 @@ namespace WebAppMeet.Hubs
             }
             await Clients.All.SendAsync("JoinedRoom", MeetingId, id, user);
         } 
+
+        public async Task UserTypes(int MeetingId, string email,bool active)
+        {
+            await Clients.All.SendAsync("UserTyping",MeetingId, email, active);
+        }
         public async Task LeaveRooom(int MeetingId, string id)
         {
             var meeting = await userMeetingsRepository.FirstOrDefault(x => x.MeetingId == MeetingId && x.UserId == id);

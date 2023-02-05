@@ -3,7 +3,7 @@
 @inherits ChatRoomComponentBase
 @inject IHttpContextAccessor  httpContextAccesor;
 
-<ChatBoxComponent @ref=ChatBox OnSendMessage="SendMessage">
+<ChatBoxComponent @ref=ChatBox OnSendMessage="SendMessage" OnUserTyping="OnUserTyping">
 
 </ChatBoxComponent>
 

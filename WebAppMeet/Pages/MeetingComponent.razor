@@ -7,12 +7,19 @@
 @inject IHttpContextAccessor  httpContextAccesor;
 @implements IDisposable
 <MeetingAttendantsComponent @ref="_MeetingAttentandantsComponentBase" />
-<ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom >
+<ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom OnChatboxUserTyping="OnUserTyping">
 
 </ChatRoomComponent>
 
+
 @code {
 
+    protected async Task OnUserTyping(string message)
+    {
+        bool typing = !message.Contains("Enter");
+        await  hub.SendAsync("UserTypes", MeetingId, User.Email,typing);
+
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -79,6 +86,14 @@
                 }
             });
 
+            hub.On<int, string,bool>("UserTyping", async (roomid, username,isTyping) =>
+            {
+                if (username != User.Email)
+                {
+                    ChatRoom.ChatBox.UserActivityIndicatorComponent.messageActivity = isTyping ? $"{username} is typing..." : "";
+                    await ChatRoom.ChatBox.UserActivityIndicatorComponent.ComponentStateHasChangedAsync();
+                }
+            });
            
             // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
             var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
