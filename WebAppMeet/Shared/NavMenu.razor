@@ -54,6 +54,7 @@
                <li id="ullink"> <a href="#">About  </a> </li>
                <li id="ullink">  <a  @onclick="RedirectToUrl"> Meetings </a> </li>
                <li id="ullink"> <a href="#">Contact  </a> </li>
+
                <li id="icon"    @onmouseover="MakeMenuVisible"  >
                    <i class="fas fa-bars"></i>
                    <ul id="accountMenu" style="@displaymenu"  @onmouseout="MakeMenuInvisible" >
@@ -69,6 +70,7 @@
                                 <NavLink @onclick="(e)=>RedirectLogin(e)" href="@urlLi1LinkPath">@actionText</NavLink>
                             </li>
                             <li class="listItemLogin"><NavLink id="logoutLink" @onclick="(e)=> RedirectRegistration(e)" href="@urlL2LinkPath">@actionText1</NavLink></li>
+                            
                         </NotAuthorized>
                           </AuthorizeView>
                       </CascadingAuthenticationState>

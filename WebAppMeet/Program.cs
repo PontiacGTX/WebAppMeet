@@ -226,7 +226,10 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 
 builder.Services.AddSingleton<CircuitHandler, TrackingCircuitHandler>();
 builder.Services.AddHttpClient();
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(o =>
+{
+    o.MaximumReceiveMessageSize = null;
+});
 builder.Services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
 builder.Services.AddSingleton<IUserIdProvider, CustomEmailProvider>();
 //builder.Services.AddSingleton<IUserIdProvider, EmailBasedUserIdProvider>();

@@ -1,8 +1,24 @@
 ﻿@using Microsoft.AspNetCore.SignalR.Client;
 @inherits ChatBoxComponentBase
 @code {
+    public string ccsMenuAttachment { get; set; } = "display:none;";
+    protected async Task OnMouseOverAttachItem(MouseEventArgs e)
+    {
+        ccsMenuAttachment = "display:inline-block;";
+    }
 
-    
+    protected async Task OnClickOnAttachItem(MouseEventArgs e)
+    {
+        ccsMenuAttachment = ccsMenuAttachment == "display:inline-block;" ? "display:none;" : "display:inline-block;";
+    }
+
+    protected async Task OnMouseOutAttachmentMenu(MouseEventArgs e)
+    {
+        ccsMenuAttachment = "display:none;";
+    }
+
+
+
 
     
 }
@@ -22,9 +38,20 @@
                         <div class="col col-lg-11">
                                <textarea style="height:200px;resize: none;width:96%;" @bind=Message @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
 
-                         </div>  
-                        <div class="col-1">
-                    <a class="btn btn-success" style="bottom:-77%;position:relative;left:-90%;border-radius:35%;" @onclick="OnButtonSend">Send</a>
+                         </div>
+                    <div style="display: flex;justify-content: center;flex-direction: row;align-items: flex-end; flex-wrap:wrap;" class="col-1">
+                            <div style="display: flex;justify-content: center;flex-direction: row;align-items: flex-end; flex-wrap:wrap;">
+                            <div class="attachmentMenu" @onclick="OnMouseOutAttachmentMenu" style="@ccsMenuAttachment">
+                                    <ul>
+                                        <li>1</li>
+                                        <li>2</li>
+                                        <li>3</li>
+                                    </ul>
+
+                                  </div>
+                               <img src="/images//icons/icons-clip.png" @onclick="OnClickOnAttachItem" @onmouseover="OnMouseOverAttachItem" style="width:42px;height:42px;" />
+                                <a class="btn btn-success" style="bottom:-77%;position:relative;border-radius:35%;" @onclick="OnButtonSend">Send</a>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -40,15 +67,26 @@
                         <div class="col col-lg-11">
                                <textarea style="height:200px;resize: none;width:96%;" @bind=Message @bind:event="oninput" @onkeydown="OnKeyPressed"></textarea>
 
-                         </div>  
-                        <div class="col-1">
-                    <a class="btn btn-success" style="bottom:-77%;position:relative;left:-90%;border-radius:35%;" @onclick="OnButtonSend">Send</a>
+                         </div>
+                    <div style="display: flex;justify-content: center;flex-direction: row;align-items: flex-end; flex-wrap:wrap;" class="col-1">
+
+                           <div style="display: flex;justify-content: center;flex-direction: row;align-items: flex-end; flex-wrap:wrap;" >
+                            <div class="attachmentMenu" @onclick="OnMouseOutAttachmentMenu" style="@ccsMenuAttachment">
+                                <ul>
+                                    <li>1</li>
+                                    <li>2</li>
+                                    <li>3</li>
+                                </ul>
+
+                            </div>
+                                <img src="/images//icons/icons-clip.png" @onclick="OnClickOnAttachItem"  @onmouseover="OnMouseOverAttachItem" style="width:42px;height:42px;" />
+                                <a class="btn btn-success" style="bottom:-77%;position:relative;border-radius:35%;" @onclick="OnButtonSend">Send</a>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <UserActivityIndicatorComponent @ref="this.UserActivityIndicatorComponent"></UserActivityIndicatorComponent>
             }
-
         </div>
         
     <section class="container" >

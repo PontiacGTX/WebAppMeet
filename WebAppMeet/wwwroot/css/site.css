@@ -12,6 +12,14 @@ h1:focus {
 a, .btn-link {
     color: #0071c1;
 }
+.attachmentMenu {
+    background-color: #34495e !important;
+    width: 130%;
+    position: absolute;
+    margin-bottom: 95%;
+    margin-right: 25%;
+    border-radius: 25% 25% 0 25%;
+}
 
 .btn-primary {
     color: #fff;
@@ -200,4 +208,66 @@ a, .btn-link {
     display: inline;
     position: sticky;
     margin-left: 24% !important;
+}
+
+@media only screen and (max-width: 1300px) {
+    .attachmentMenu {
+        background-color: aqua;
+        width: 130%;
+        position: absolute;
+        margin-bottom: 95%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
+  
+}
+@media only screen and (max-width: 1200px) {
+    .attachmentMenu {
+        background-color: #34495e !important;
+        width: 130%;
+        position: absolute;
+        margin-bottom: 90%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
+}
+@media only screen and (max-width: 11570px) {
+    .attachmentMenu {
+        background-color: #34495e !important;
+        width: 130%;
+        position: absolute;
+        margin-bottom: 90%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
+}
+@media only screen and (max-width: 10630px) {
+    .attachmentMenu {
+        background-color: #34495e !important;
+        width: 130%;
+        position: absolute;
+        margin-bottom: 95%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
+}
+@media only screen and (max-width: 898px) {
+    .attachmentMenu {
+        background-color: #34495e !important;
+        width: 140%;
+        position: absolute;
+        margin-bottom: 135%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
+}
+@media only screen and (max-width: 766px) {
+    .attachmentMenu {
+        background-color: #34495e !important;
+        width: 140%;
+        position: absolute;
+        margin-bottom: 165%;
+        margin-right: 25%;
+        border-radius: 25% 25% 0 25%;
+    }
 }
