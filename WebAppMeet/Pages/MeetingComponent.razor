@@ -6,13 +6,16 @@
 @inherits MeetingComponentBase;
 @inject IHttpContextAccessor  httpContextAccesor;
 @implements IDisposable
-<MeetingAttendantsComponent @ref="_MeetingAttentandantsComponentBase" />
+@inject NavigationManager nav;
+<MeetingAttendantsComponent @ref="_MeetingAttentandantsComponentBase"  />
 <ChatRoomComponent MeetingId="MeetingId" @ref=ChatRoom OnChatboxUserTyping="OnUserTyping">
 
 </ChatRoomComponent>
 
 
 @code {
+
+    private static Action _OnMeetingClosed;
 
     protected async Task OnUserTyping(string message)
     {
@@ -60,31 +63,33 @@
                 ChatRoom.OnReceiveMessage(name, message); 
             });
 
-            hub.On<int, string,string>("JoinedRoom", (roomid, id,name) =>
+            hub.On<int, string,string>("JoinedRoom",async  (roomid, id,name) =>
             {
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
                     _MeetingAttentandantsComponentBase.Attendants.Add(id, name);
-                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                    await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
             });
 
-            hub.On<string, string>("JoinedUsers", (userId, email) =>
+            hub.On<string, string>("JoinedUsers", async (userId, email) =>
             {
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(userId))
                 {
                     _MeetingAttentandantsComponentBase.Attendants.Add(userId, email.ToLower());
-                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                    await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
             });
-            hub.On<int,string>("LeavingRoom", (roomid,id) =>
+            hub.On<int,string>("LeavingRoom", async (roomid,id) =>
             {
                 if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
                     _MeetingAttentandantsComponentBase.Attendants.Remove(id);
-                    _MeetingAttentandantsComponentBase.ComponentStateHasChanged();
+                    await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
             });
+
+
 
             hub.On<int, string,bool>("UserTyping", async (roomid, username,isTyping) =>
             {
@@ -94,13 +99,17 @@
                     await ChatRoom.ChatBox.UserActivityIndicatorComponent.ComponentStateHasChangedAsync();
                 }
             });
-           
+
             // hub.On<string, string>("ReceiveMessage", ChatRoom.HubOnReceiveMessageDelegate);
             var containsCookies = this.httpContextAccesor.HttpContext.Request.Cookies;
             var cookie = containsCookies["Application.Identity"];
             ChatRoom.hub = hub;
             //hub.ServerTimeout = TimeSpan.FromMilliseconds(100000);
             await hub.StartAsync();
+
+            if(_OnMeetingClosed==null)
+                _OnMeetingClosed = OnMeetingClosed;
+
         }
         else
         {
@@ -110,11 +119,35 @@
                 if ( !_MeetingAttentandantsComponentBase.Attendants.ContainsKey(User?.Id))
                 {
                     await hub.SendAsync("JoinRoom",MeetingId, User.Id, ChatRoom?.User.UserName);
-                    
-                await hub.SendAsync("GetCurrentUsers", MeetingId);
+
+                    await hub.SendAsync("GetCurrentUsers", MeetingId);
                 }
             }
+            if(_OnMeetingClosed==null)
+                _OnMeetingClosed = OnMeetingClosed;
         }
+    }
+
+    void OnMeetingClosed()
+    {
+        OnUserTyping("Enter");
+
+        if (User != null && _MeetingAttentandantsComponentBase.Attendants.ContainsKey
+         (User?.Id))
+        {
+            this.
+            hub.SendAsync("LeaveRooom", MeetingId, User.Id).GetAwaiter().GetResult();
+        }
+    }
+
+    [JSInvokable("ReturnDataAsync1")]
+    public static Task<string> ReturnDataAsync()
+    {
+
+        //This line appears in server console.
+        Console.WriteLine("Hello from server");
+        _OnMeetingClosed.Invoke();
+        return Task.FromResult("Hello");
     }
 
     public void Dispose()

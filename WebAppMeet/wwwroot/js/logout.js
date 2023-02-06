@@ -1,6 +1,8 @@
-﻿document.getElementById("logoutLink").addEventListener("click", function() {
-    localStorage.removeItem("accessToken");
+﻿//var loutoutBtn = document.getElementById("logoutLink");
 
-    localStorage.removeItem("tokenData.js");
-    console.log('cleared local strorage');
-});
+//loutoutBtn.addEventListener("click", function () {
+//    localStorage.removeItem("accessToken");
+
+//    localStorage.removeItem("tokenData.js");
+//    console.log('cleared local strorage');
+//});

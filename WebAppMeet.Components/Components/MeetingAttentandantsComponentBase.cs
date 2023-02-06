@@ -28,9 +28,11 @@ namespace WebAppMeet.Components.Components
         { 
             Attendants.Remove(str);
         }
-        public void ComponentStateHasChanged()
+        public async Task ComponentStateHasChangedAsync()
         {
-            StateHasChanged();
+            await InvokeAsync(() => {
+                StateHasChanged();
+            });
         }
         protected override Task OnInitializedAsync()
         {
