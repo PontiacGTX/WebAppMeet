@@ -82,7 +82,7 @@
             });
             hub.On<int,string>("LeavingRoom", async (roomid,id) =>
             {
-                if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
+                if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id) && User.Id!=id)
                 {
                     _MeetingAttentandantsComponentBase.Attendants.Remove(id);
                     await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
