@@ -82,7 +82,9 @@ namespace WebAppMeet.Components.Components
         }
         public async Task ComponentStateHasChanged()
         {
-            StateHasChanged();
+            await InvokeAsync(() => {
+                StateHasChanged();
+            });
         }
     }
 }

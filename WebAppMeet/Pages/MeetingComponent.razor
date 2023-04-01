@@ -69,7 +69,9 @@
             {
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
-                    FadeNotification.DisplayText(name, $"Online");
+                    if(id!=User?.Id)
+                    FadeNotification.DisplayText(name, $"Joined");
+
                     _MeetingAttentandantsComponentBase.Attendants.Add(id, name);
                     await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
@@ -85,9 +87,9 @@
             });
             hub.On<int,string>("LeavingRoom", async (roomid,id) =>
             {
-                if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id) && User.Id!=id)
+                if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id) && User?.Id!=id)
                 {
-                    FadeNotification.DisplayText(_MeetingAttentandantsComponentBase.Attendants[id], $"Offline");
+                    FadeNotification.DisplayText(_MeetingAttentandantsComponentBase.Attendants[id], $"Left");
                     _MeetingAttentandantsComponentBase.Attendants.Remove(id);
                     await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
@@ -97,7 +99,7 @@
 
             hub.On<int, string,bool>("UserTyping", async (roomid, username,isTyping) =>
             {
-                if (username != User.Email)
+                if (username != User?.Email)
                 {
                     ChatRoom.ChatBox.UserActivityIndicatorComponent.messageActivity = isTyping ? $"{username} is typing..." : "";
                     await ChatRoom.ChatBox.UserActivityIndicatorComponent.ComponentStateHasChangedAsync();
