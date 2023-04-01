@@ -86,9 +86,15 @@ namespace WebAppMeet.Components.Components
             if (!InvitedUsers.ContainsKey(inputComponent.Value))
             {
                 InvitedUsers.Add(inputComponent.Value,inputComponent.Value);
+                ClearTextBox();
                 StateHasChanged();
             }
             
+        }
+
+        public void ClearTextBox()
+        {
+            inputComponent.Value = "";
         }
 
         public async Task DeleteUser(string u)
