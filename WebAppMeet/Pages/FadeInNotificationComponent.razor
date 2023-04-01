@@ -1,0 +1,103 @@
+﻿
+
+<style>
+/*    // Modal animation*/
+@@keyframes fadein {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+/*// Modal styling*/
+.modal {
+  background: rgba(82, 122, 157 , 0.7);
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 10%;
+  width: fit-content;
+  z-index: 20;
+  opacity: 1;
+  border-radius:0 0 20% 20%;
+  
+  /*// Animation trigger  */
+  animation: fadein 0.4s;
+  animation-delay: 0.1s;
+  animation-fill-mode: forwards;
+}
+/*// Modal styling*/
+.modal-wrap {
+  background: rgba(0, 0, 0, 0.75);
+  color: white;
+  display: flex; /*// Allows us to centre the child element*/
+  position: fixed;
+  opacity: 0; /*// Initially not visible*/
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 3;
+
+/*  // Animation trigger*/
+  animation: fadein 1s;
+  animation-delay: 1s;
+  animation-fill-mode: forwards;
+}
+
+    .hiddenElement{
+        display:none;
+    }
+.modal-inner {
+  background: #000;
+  border: 1px dashed #fff;
+  margin: auto; /*// Centres the element vertically & horizontally due*/
+  max-width: 320px;
+  text-align: center;
+}
+</style>
+<div class="@ActiveClassModal">
+    <div class="@ActiveClassModalInner">
+        <h3>@Title</h3>
+
+        <p>@Text</p>
+  </div>
+</div>
+@code {
+    
+   
+
+    public string Title { get; set; }
+    public string Text { get; set; }
+    public string ActiveClassModal { get; set; }
+    public string ActiveClassModalInner { get; set; }
+
+    private Timer _timer;
+    private int _secondsElapsed;
+
+    public void DisplayText(string title, string text)
+    {
+        Title = title;
+        Text = text;
+        ActiveClassModal = "modal";
+        ActiveClassModalInner = "inner-container";
+
+        _secondsElapsed = 0;
+        _timer = new Timer(OnTimerElapsed, null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
+    }
+
+    private void OnTimerElapsed(object state)
+    {
+        _secondsElapsed++;
+        if (_secondsElapsed >= 5)
+        {
+            ActiveClassModal = "hiddenElement";
+            ActiveClassModalInner = "hiddenElement";
+            _timer.Dispose();
+        }
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

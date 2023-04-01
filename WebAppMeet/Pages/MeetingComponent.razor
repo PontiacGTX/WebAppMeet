@@ -12,11 +12,12 @@
 
 </ChatRoomComponent>
 
-
+<FadeInNotificationComponent @ref="FadeNotification"></FadeInNotificationComponent>
 @code {
-
+   
+    
     private static Action _OnMeetingClosed;
-
+    public FadeInNotificationComponent FadeNotification { get; set; } = new FadeInNotificationComponent();
     protected async Task OnUserTyping(string message)
     {
         bool typing = !message.Contains("Enter");
@@ -59,7 +60,8 @@
             HubOnReceiveMessageDelegate = ChatRoom.OnReceiveMessage;
             hub.On<string, string>("ReceiveMessage", ( name, message) => 
             {
-
+                
+               // StartTimer();
                 ChatRoom.OnReceiveMessage(name, message); 
             });
 
@@ -67,6 +69,7 @@
             {
                 if (!_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id))
                 {
+                    FadeNotification.DisplayText(name, $"Online");
                     _MeetingAttentandantsComponentBase.Attendants.Add(id, name);
                     await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
@@ -84,6 +87,7 @@
             {
                 if (_MeetingAttentandantsComponentBase.Attendants.ContainsKey(id) && User.Id!=id)
                 {
+                    FadeNotification.DisplayText(_MeetingAttentandantsComponentBase.Attendants[id], $"Offline");
                     _MeetingAttentandantsComponentBase.Attendants.Remove(id);
                     await _MeetingAttentandantsComponentBase.ComponentStateHasChangedAsync();
                 }
