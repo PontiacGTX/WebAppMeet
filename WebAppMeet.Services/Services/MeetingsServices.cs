@@ -27,7 +27,7 @@ namespace WebAppMeet.Services.Services
 
             var repo = await GetRepository<Meeting>();
             
-            var result =await repo.AddAndSave(new Meeting { Url = $"", Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId   });
+            var result =await repo.AddAndSave(new Meeting { Url = $"", Date = model.Date, Description = model.Description, Started = false, HostId = model.UserId, IsEnabled=true   });
             
             result.Url = $"/Meeting/{result.MeetingId}";
             
@@ -79,6 +79,20 @@ namespace WebAppMeet.Services.Services
 
             return Factory.GetResponse<Response<Meeting>,Meeting>(meeting);
         }
+        public async Task<Response<IList<Meeting>>> GetAllMeetings()
+            => Factory.GetResponse<Response<IList<Meeting>>,IList<Meeting>> ( await (await _factory.GetRepositoryAsync<UserMeetings>()).GetAll<UserMeetings, Meeting, Meeting>(
+                include: x => x.Include( x => x.User).Include(x => x.Meeting).ThenInclude(x => x.Host),
+                whereClause: x=>x.Meeting.IsEnabled,
+                selector: x => x,
+                groupBy: x => x.GroupBy(y => y.Meeting),
+                x => x.Key)); 
+        public async Task<Response<IList<Meeting>>> GetAllMeetings(Expression<Func<UserMeetings,bool>> selector)
+            => Factory.GetResponse<Response<IList<Meeting>>,IList<Meeting>>(await (await _factory.GetRepositoryAsync<UserMeetings>()).GetAll<UserMeetings, Meeting, Meeting>(
+                include: x => x.Include(x => x.User).Include(x => x.Meeting).ThenInclude(x => x.Host),
+                whereClause: x => x.Meeting.IsEnabled,
+                selector: x => x,
+                groupBy: x => x.GroupBy(y => y.Meeting),
+                x => x.Key));
 
         public async Task<Response<IList<UserMeetings>>> GetUserMeeting<TId>(TId meetingId)
         {
@@ -251,9 +265,20 @@ namespace WebAppMeet.Services.Services
 
             return Factory.GetResponse<Response<IList<Meeting>>, IList<Meeting>>(meetings);
         }
+        async Task<Response<bool>> DeleteUserMeetingVyMeeting<TId>(TId meetingId)
+        {
+            var repo = await _factory.GetRepositoryAsync<UserMeetings>();
 
+            IEnumerable<UserMeetings> userMeetings = await repo.GetAll<UserMeetings>(whereClause: (userMeeting => userMeeting.MeetingId == Convert.ToInt32(meetingId)), selector: x => x);
+
+            await repo.DeleteRange(userMeetings);
+
+            return  Factory.GetResponse<Response<bool>, bool>(true);
+        }
         public  async Task<Response<bool?>> Delete<TId>(TId id)
         {
+            await DeleteUserMeetingVyMeeting(id);
+
             var repo = await GetRepository<Meeting>();
 
             int idV = Convert.ToInt32(id);

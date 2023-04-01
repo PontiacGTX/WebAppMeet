@@ -146,7 +146,7 @@
 
         //This line appears in server console.
         Console.WriteLine("Hello from server");
-        _OnMeetingClosed.Invoke();
+        _OnMeetingClosed?.Invoke();
         return Task.FromResult("Hello");
     }
 

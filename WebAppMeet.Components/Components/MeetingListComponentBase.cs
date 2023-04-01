@@ -15,7 +15,7 @@ using WebAppMeet.Services.Services;
 
 namespace WebAppMeet.Components.Components
 {
-    public class MeetingListComponentBase:ComponentBase
+    public class MeetingListComponentBase : ComponentBase
     {
         [CascadingParameter]
         protected Task<AuthenticationState> _authenticationState { get; set; }
@@ -39,9 +39,9 @@ namespace WebAppMeet.Components.Components
         protected IList<Meeting> meetings { get; set; }
         protected Response<IList<Meeting>> MeetingsResponse { get; set; }
 
-        protected async Task OnButtonClick(string url,int meetingId,DateTime date)
+        protected async Task OnJoinButtonClick(string url, int meetingId, DateTime date)
         {
-            if (date<DateTime.Now.Date)
+            if (date < DateTime.Now.Date)
             {
                 await PrintMessage("Invalid meeting", "Meeting's expired");
                 return;
@@ -50,6 +50,15 @@ namespace WebAppMeet.Components.Components
                 _NavigationManager.NavigateTo(url);
             else
                 _NavigationManager.NavigateTo($"/Meeting/{meetingId}");
+        }
+        protected async Task OnDeleteButtonClick(string url, int meetingId, DateTime date)
+        {
+            await _meetingServices.Delete(meetingId);
+
+            meetings = (await _meetingServices.GetAllMeetings(x => x.Meeting.IsEnabled == true && x.UserId ==UserId)).Data;
+            meetings = meetings ?? new List<Meeting>();
+            this.StateHasChanged();
+
         }
         protected override async Task OnInitializedAsync()
         {
@@ -108,12 +117,13 @@ namespace WebAppMeet.Components.Components
 
                 try
                 {
-                    await (MeetingsResponse.StatusCode switch
+                    await (MeetingsResponse?.StatusCode switch
                     {
                         400 => PrintMessage("Error while requesting user", MeetingsResponse.Message),
                         404 => PrintMessage("Not Meetings were found", MeetingsResponse.Message),
                         500 => PrintMessage("A ServerError happened try again", MeetingsResponse.Message),
-                        200=> Task.FromResult("")
+                        200=> Task.FromResult(""),
+                        _=> PrintMessage("A ServerError happened try again", MeetingsResponse.Message),
                     });
                     meetings = (MeetingsResponse?.Data as IList<Meeting>) ?? new List<Meeting>();
                 }

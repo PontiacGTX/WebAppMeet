@@ -65,7 +65,7 @@ namespace WebAppMeet.DataAcess.Repository
         {
             var result = _ctx.Set<T>().AsQueryable();
 
-           // if (include != null)
+           if (include != null)
             result = include(result);
 
             var res =  (whereClause is null ? result.Select(selector) : result.Where(whereClause).Select(selector));
@@ -181,8 +181,18 @@ namespace WebAppMeet.DataAcess.Repository
 
             await _ctx.SaveChangesAsync();
 
-            return _ctx.Set<T>().FindAsync(id) == null; ;
+            return _ctx.Set<T>().FindAsync(id) == null;
         }
+
+        public async Task DeleteRange(IEnumerable<T> collection)
+        {
+            _ctx.Set<T>().RemoveRange(collection);
+
+            await _ctx.SaveChangesAsync();
+
+            await  Task.CompletedTask;
+        }
+
 
         public async Task<IList<TEntity>> GetAll<TEntity>(
             Expression<Func<T, bool>> whereClause = null, Expression<Func<T, TEntity>> selector = null, 
