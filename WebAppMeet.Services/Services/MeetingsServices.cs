@@ -271,6 +271,7 @@ namespace WebAppMeet.Services.Services
 
             IEnumerable<UserMeetings> userMeetings = await repo.GetAll<UserMeetings>(whereClause: (userMeeting => userMeeting.MeetingId == Convert.ToInt32(meetingId)), selector: x => x);
 
+            if(userMeetings?.Any()) 
             await repo.DeleteRange(userMeetings);
 
             return  Factory.GetResponse<Response<bool>, bool>(true);
